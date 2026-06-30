@@ -10,10 +10,20 @@ import ArtistPanel from "./ArtistPanel";
 // Get your free token at mapbox.com → account → tokens
 const TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? "";
 
-export default function Map() {
+interface MapProps {
+  activeGenre: string;
+}
+
+interface MarkerEntry {
+  marker: mapboxgl.Marker;
+  el: HTMLDivElement;
+  genre: string;
+}
+
+export default function Map({ activeGenre }: MapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const markersRef = useRef<MarkerEntry[]>([]);
   const [selected, setSelected] = useState<Location | null>(null);
   const [mapReady, setMapReady] = useState(false);
 
@@ -21,19 +31,20 @@ export default function Map() {
     setSelected(loc);
     mapRef.current?.flyTo({
       center: [loc.lng, loc.lat],
-      zoom: 14,
-      duration: 1200,
+      zoom: 13.5,
+      pitch: 45,
+      duration: 1400,
       essential: true,
     });
   }, []);
 
   const handleClose = useCallback(() => {
     setSelected(null);
+    mapRef.current?.easeTo({ pitch: 0, duration: 800 });
   }, []);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
-    // Don't initialise Mapbox without a token — it throws a runtime error
     if (!TOKEN) return;
 
     mapboxgl.accessToken = TOKEN;
@@ -50,41 +61,47 @@ export default function Map() {
     });
 
     map.on("style.load", () => {
-      // Atmosphere on the globe
       map.setFog({
         color: "rgb(10, 10, 15)",
         "high-color": "rgb(15, 10, 30)",
-        "horizon-blend": 0.03,
-        "space-color": "rgb(5, 5, 10)",
-        "star-intensity": 0.6,
+        "horizon-blend": 0.04,
+        "space-color": "rgb(4, 4, 8)",
+        "star-intensity": 0.7,
       });
       setMapReady(true);
     });
 
     mapRef.current = map;
 
+    // Window resize events don't always fire under CDP viewport emulation —
+    // watch the container element directly so the canvas always matches it.
+    const ro = new ResizeObserver(() => map.resize());
+    ro.observe(containerRef.current);
+
     return () => {
-      markersRef.current.forEach((m) => m.remove());
+      ro.disconnect();
+      markersRef.current.forEach((m) => m.marker.remove());
+      markersRef.current = [];
       map.remove();
       mapRef.current = null;
     };
   }, []);
 
-  // Add markers once map is ready
+  // Build markers once the map is ready
   useEffect(() => {
     if (!mapReady || !mapRef.current) return;
 
     LOCATIONS.forEach((loc) => {
       const color = GENRE_COLORS[loc.genre] ?? "#ef4444";
 
-      // Build custom HTML marker
       const el = document.createElement("div");
       el.className = "turf-marker";
       el.style.cssText = `
         position: relative;
-        width: 14px;
-        height: 14px;
+        width: 26px;
+        height: 26px;
         cursor: pointer;
+        transition: opacity 0.25s ease, transform 0.25s ease;
       `;
 
       // Outer pulse ring
@@ -92,31 +109,73 @@ export default function Map() {
       ring.className = "marker-ping";
       ring.style.cssText = `
         position: absolute;
+        inset: 6px;
+        border-radius: 50%;
+        background: ${color};
+        opacity: 0.4;
+      `;
+
+      // Outer glow halo (static, soft)
+      const halo = document.createElement("div");
+      halo.style.cssText = `
+        position: absolute;
         inset: 0;
         border-radius: 50%;
-        background: ${color};
-        opacity: 0.35;
+        background: radial-gradient(circle, ${color}33 0%, transparent 70%);
       `;
 
-      // Inner dot
-      const dot = document.createElement("div");
-      dot.style.cssText = `
+      // Core pin
+      const core = document.createElement("div");
+      core.style.cssText = `
         position: absolute;
-        inset: 3px;
+        inset: 8px;
         border-radius: 50%;
-        background: ${color};
-        box-shadow: 0 0 6px ${color};
-        transition: transform 0.15s ease;
+        background: radial-gradient(circle at 35% 30%, ${color}, ${color}cc 60%, ${color}88 100%);
+        border: 2px solid rgba(255,255,255,0.85);
+        box-shadow: 0 0 10px ${color}, 0 0 2px rgba(0,0,0,0.6);
+        transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1);
       `;
 
+      // Hover tooltip
+      const tooltip = document.createElement("div");
+      tooltip.style.cssText = `
+        position: absolute;
+        bottom: calc(100% + 10px);
+        left: 50%;
+        transform: translateX(-50%) translateY(4px);
+        white-space: nowrap;
+        background: rgba(10,10,10,0.95);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 3px;
+        padding: 6px 10px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.18s ease, transform 0.18s ease;
+        z-index: 10;
+      `;
+      const tName = document.createElement("div");
+      tName.textContent = loc.name;
+      tName.style.cssText = `font-size: 11px; font-weight: 700; color: #fff; letter-spacing: -0.01em;`;
+      const tCity = document.createElement("div");
+      tCity.textContent = loc.city;
+      tCity.style.cssText = `font-size: 9px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: ${color}; margin-top: 1px;`;
+      tooltip.appendChild(tName);
+      tooltip.appendChild(tCity);
+
+      el.appendChild(halo);
       el.appendChild(ring);
-      el.appendChild(dot);
+      el.appendChild(core);
+      el.appendChild(tooltip);
 
       el.addEventListener("mouseenter", () => {
-        dot.style.transform = "scale(1.5)";
+        core.style.transform = "scale(1.35)";
+        tooltip.style.opacity = "1";
+        tooltip.style.transform = "translateX(-50%) translateY(0)";
       });
       el.addEventListener("mouseleave", () => {
-        dot.style.transform = "scale(1)";
+        core.style.transform = "scale(1)";
+        tooltip.style.opacity = "0";
+        tooltip.style.transform = "translateX(-50%) translateY(4px)";
       });
       el.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -127,16 +186,24 @@ export default function Map() {
         .setLngLat([loc.lng, loc.lat])
         .addTo(mapRef.current!);
 
-      markersRef.current.push(marker);
+      markersRef.current.push({ marker, el, genre: loc.genre });
     });
   }, [mapReady, handleSelect]);
 
+  // Filter markers by active genre (visual fade, not full re-mount)
+  useEffect(() => {
+    markersRef.current.forEach(({ el, genre }) => {
+      const visible = activeGenre === "all" || genre === activeGenre;
+      el.style.opacity = visible ? "1" : "0.08";
+      el.style.transform = visible ? "scale(1)" : "scale(0.7)";
+      el.style.pointerEvents = visible ? "auto" : "none";
+    });
+  }, [activeGenre]);
+
   return (
     <div className="relative w-full h-full">
-      {/* Map container */}
       <div ref={containerRef} className="w-full h-full" />
 
-      {/* No token warning */}
       {!TOKEN && (
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center p-6 rounded-lg z-20 max-w-sm"
@@ -156,7 +223,6 @@ export default function Map() {
         </div>
       )}
 
-      {/* Artist panel */}
       <ArtistPanel location={selected} onClose={handleClose} />
     </div>
   );

@@ -1,5 +1,7 @@
 import { Location } from "@/lib/types";
 
+const img = (id: string) => `https://images.unsplash.com/${id}?w=800&h=600&fit=crop&q=80`;
+
 export const LOCATIONS: Location[] = [
   {
     id: "o-block",
@@ -11,6 +13,7 @@ export const LOCATIONS: Location[] = [
     lng: -87.6082,
     genre: "hip-hop",
     era: "2012 – present",
+    coverUrl: img("photo-1493225457124-a3eb161ffa5f"),
     description:
       "A single block on Chicago's South Side that became the birthplace of drill music. Chief Keef's 'Love Sosa' was filmed here in 2012 and changed hip-hop forever. The block's name became shorthand for a generation of artists who used music as a way out.",
     artists: [
@@ -46,6 +49,7 @@ export const LOCATIONS: Location[] = [
     lng: -73.9462,
     genre: "hip-hop",
     era: "1990 – present",
+    coverUrl: img("photo-1493676304819-0d7a8d026dcf"),
     description:
       "The Marcy Houses public housing project in Bed-Stuy produced Jay-Z, one of the best-selling music artists of all time. Shawn Carter grew up in Building 5 and went on to become a billionaire, but the projects remain central to his identity and lyrics.",
     artists: [
@@ -71,6 +75,7 @@ export const LOCATIONS: Location[] = [
     lng: -73.9381,
     genre: "hip-hop",
     era: "1987 – present",
+    coverUrl: img("photo-1477959858617-67f85cf4f1df"),
     description:
       "The largest public housing project in North America. Per square foot, Queensbridge has produced more influential hip-hop artists than any other location on earth. Nas recorded 'Illmatic' about these courtyards — still widely considered the greatest rap album ever made.",
     artists: [
@@ -106,6 +111,7 @@ export const LOCATIONS: Location[] = [
     lng: -118.2201,
     genre: "hip-hop",
     era: "1988 – present",
+    coverUrl: img("photo-1480714378408-67cf0d13bc1f"),
     description:
       "A city of 97,000 that put West Coast rap on the map. NWA's 'Straight Outta Compton' (1988) introduced reality rap to mainstream America. Three decades later, Kendrick Lamar won the Pulitzer Prize — first non-classical, non-jazz musician ever — writing about the same streets.",
     artists: [
@@ -141,6 +147,7 @@ export const LOCATIONS: Location[] = [
     lng: -79.4108,
     genre: "hip-hop",
     era: "2009 – present",
+    coverUrl: img("photo-1518609878373-06d740f60d8b"),
     description:
       "Drake grew up in the Forest Hill neighborhood of Toronto. His childhood home at 2906 Weston Road became the backdrop for some of rap's most introspective music. He turned Toronto — a city with no hip-hop identity — into one of the most referenced cities in the genre.",
     artists: [
@@ -166,6 +173,7 @@ export const LOCATIONS: Location[] = [
     lng: -79.2577,
     genre: "hip-hop",
     era: "2011 – present",
+    coverUrl: img("photo-1516450360452-9312f5e86fc7"),
     description:
       "The Weeknd — Abel Tesfaye — grew up in Scarborough, Toronto's rough east end. He dropped three free mixtapes in 2011 that redefined R&B and created the template for dark, atmospheric pop that every major label spent a decade trying to replicate.",
     artists: [
@@ -191,6 +199,7 @@ export const LOCATIONS: Location[] = [
     lng: -90.1143,
     genre: "hip-hop",
     era: "1999 – present",
+    coverUrl: img("photo-1531058020387-3be344556be6"),
     description:
       "Lil Wayne grew up in the Hollygrove neighborhood of New Orleans. He signed to Cash Money Records at 9 years old and by his teens was already recording. His 'Tha Carter III' (2008) sold 1 million copies in its first week — one of the last albums to ever do that.",
     artists: [
@@ -216,6 +225,7 @@ export const LOCATIONS: Location[] = [
     lng: -83.0464,
     genre: "hip-hop",
     era: "1995 – present",
+    coverUrl: img("photo-1429962714451-bb934ecdc4ec"),
     description:
       "8 Mile Road is the physical dividing line between Detroit and its northern suburbs. Eminem grew up on the Detroit side — poor, white, and surrounded by a predominantly Black art form he was completely obsessed with. He became the best-selling rap artist of all time.",
     artists: [
@@ -241,6 +251,7 @@ export const LOCATIONS: Location[] = [
     lng: -118.2468,
     genre: "hip-hop",
     era: "2003 – present",
+    coverUrl: img("photo-1483721310020-03333e577078"),
     description:
       "Kendrick Lamar grew up at 1026 W. Grape Street in Watts — the project neighborhood of Compton. The contrast between Watts and its wealthier surroundings shaped 'To Pimp a Butterfly,' a jazz-infused meditation on Black identity in America.",
     artists: [
@@ -266,6 +277,7 @@ export const LOCATIONS: Location[] = [
     lng: -0.0688,
     genre: "grime",
     era: "2007 – present",
+    coverUrl: img("photo-1605721911519-3dfeb3be25e7"),
     description:
       "Peckham in South London is ground zero for UK drill and grime. Central Cee grew up here. The neighborhood's multicultural energy produced a uniquely British sound that blended Jamaican patois, London slang, and American trap production.",
     artists: [
@@ -291,6 +303,7 @@ export const LOCATIONS: Location[] = [
     lng: -0.1156,
     genre: "grime",
     era: "2014 – present",
+    coverUrl: img("photo-1542204165-65bf26472b9b"),
     description:
       "Brixton is one of London's most historically Black neighborhoods and a hotbed of UK grime and rap. Stormzy grew up nearby in Thornton Heath. His Glastonbury headline set in 2019 — the first Black British solo artist ever — was a cultural milestone.",
     artists: [
@@ -307,6 +320,32 @@ export const LOCATIONS: Location[] = [
     ],
   },
   {
+    id: "tottenham",
+    name: "Tottenham",
+    fullName: "Tottenham, North London",
+    city: "London",
+    country: "UK",
+    lat: 51.5878,
+    lng: -0.0680,
+    genre: "grime",
+    era: "2002 – present",
+    coverUrl: img("photo-1546528377-79612d35c6c4"),
+    description:
+      "Tottenham is where grime itself was forged — pirate radio stacks, MCs trading bars over jungle breaks. Skepta grew up here and carried the sound from estate stairwells to a Mercury Prize, proving grime could be both raw and globally dominant.",
+    artists: [
+      {
+        id: "skepta",
+        name: "Skepta",
+        genre: "grime",
+        color: "#facc15",
+        initials: "SK",
+        bio: "Joseph Junior Adenuga. Boy Better Know founder. Won the 2016 Mercury Prize for 'Konnichiwa,' the album that took grime out of London and onto the world stage.",
+        spotifyUrl: "https://open.spotify.com/artist/2N28RhBVeOlu0CDeucXOEM",
+        signatureTrack: "Shutdown",
+      },
+    ],
+  },
+  {
     id: "trenchtown",
     name: "Trenchtown",
     fullName: "Trenchtown, West Kingston",
@@ -316,6 +355,7 @@ export const LOCATIONS: Location[] = [
     lng: -76.7981,
     genre: "reggae",
     era: "1963 – 1981",
+    coverUrl: img("photo-1508700929628-666bc8bd84ea"),
     description:
       "Trenchtown is the neighborhood in Kingston, Jamaica where Bob Marley and the Wailers formed. Living in government yards, Marley developed the reggae sound that would spread globally. He remains the most recognizable musician Jamaica has ever produced.",
     artists: [
@@ -332,27 +372,282 @@ export const LOCATIONS: Location[] = [
     ],
   },
   {
-    id: "memphis",
-    name: "Orange Mound",
-    fullName: "Orange Mound, East Memphis",
-    city: "Memphis, TN",
-    country: "US",
-    lat: 35.1273,
-    lng: -89.9759,
-    genre: "hip-hop",
-    era: "1991 – present",
+    id: "waterhouse",
+    name: "Waterhouse",
+    fullName: "Waterhouse, Kingston 11",
+    city: "Kingston",
+    country: "Jamaica",
+    lat: 17.9970,
+    lng: -76.8090,
+    genre: "reggae",
+    era: "2003 – present",
+    coverUrl: img("photo-1493225457124-a3eb161ffa5f"),
     description:
-      "Memphis produced one of the darkest, most original rap sounds in history — slow, horrorcore beats with triple-time rapping. Three 6 Mafia invented a style in Orange Mound that influenced everything from trap music to modern drill. They also became the first rap group to win an Oscar.",
+      "Waterhouse produced the riddim section that built dancehall's modern sound, and Vybz Kartel — the genre's most controversial and influential voice — came up performing in its street dances before becoming dancehall's biggest star worldwide.",
     artists: [
       {
-        id: "three-6-mafia",
-        name: "Three 6 Mafia",
+        id: "vybz-kartel",
+        name: "Vybz Kartel",
+        genre: "reggae",
+        color: "#f43f5e",
+        initials: "VK",
+        bio: "Adidja Palmer. The most influential dancehall artist of his generation, known as the 'Worl' Boss.' His sound shaped Afrobeats, drill, and Caribbean pop alike.",
+        spotifyUrl: "https://open.spotify.com/artist/1tqg9DNRRn8ZSdJORlMy8b",
+        signatureTrack: "Fever",
+      },
+    ],
+  },
+  {
+    id: "ajegunle",
+    name: "Ajegunle",
+    fullName: "Ajegunle, Lagos Mainland",
+    city: "Lagos",
+    country: "Nigeria",
+    lat: 6.4584,
+    lng: 3.3260,
+    genre: "afrobeats",
+    era: "2010 – present",
+    coverUrl: img("photo-1483721310020-03333e577078"),
+    description:
+      "Ajegunle — 'AJ City' — is one of Lagos's densest, most musically prolific neighborhoods. It's been a launching pad for decades of Nigerian street music and helped shape the raw, percussive energy that fed into the global Afrobeats explosion.",
+    artists: [
+      {
+        id: "burna-boy",
+        name: "Burna Boy",
+        genre: "afrobeats",
+        color: "#16a34a",
+        initials: "BB",
+        bio: "Damini Ogulu. From Port Harcourt by way of Lagos. Won the Grammy for Best Global Music Album with 'Twice as Tall,' calling himself the 'African Giant.'",
+        spotifyUrl: "https://open.spotify.com/artist/5a2EaR3hamoenG9rDuVn8j",
+        signatureTrack: "Last Last",
+      },
+    ],
+  },
+  {
+    id: "ojuelegba",
+    name: "Ojuelegba",
+    fullName: "Ojuelegba, Surulere",
+    city: "Lagos",
+    country: "Nigeria",
+    lat: 6.5083,
+    lng: 3.3633,
+    genre: "afrobeats",
+    era: "2011 – present",
+    coverUrl: img("photo-1518609878373-06d740f60d8b"),
+    description:
+      "A chaotic, beloved bus-stop neighborhood in Surulere that Wizkid immortalized in his breakout single of the same name. 'Ojuelegba' became an anthem for hustling out of Lagos's busiest, loudest streets — and helped launch Afrobeats onto Western radio.",
+    artists: [
+      {
+        id: "wizkid",
+        name: "Wizkid",
+        genre: "afrobeats",
+        color: "#0ea5e9",
+        initials: "WK",
+        bio: "Ayodeji Balogun. One of the architects of modern Afrobeats. His feature on Drake's 'One Dance' became the most-streamed song in Spotify history at the time.",
+        spotifyUrl: "https://open.spotify.com/artist/3tVQdUvClmAT7URs9V3rsh",
+        signatureTrack: "Ojuelegba",
+      },
+    ],
+  },
+  {
+    id: "san-juan",
+    name: "Santurce",
+    fullName: "Santurce, San Juan",
+    city: "San Juan",
+    country: "Puerto Rico",
+    lat: 18.4396,
+    lng: -66.0726,
+    genre: "latin",
+    era: "2016 – present",
+    coverUrl: img("photo-1518609878373-06d740f60d8b"),
+    description:
+      "Bad Bunny grew up in nearby Vega Baja and broke out performing in San Juan, busking and recording in his bedroom before becoming the most-streamed artist in the world. He turned Puerto Rican slang and reggaetón into a dominant global sound.",
+    artists: [
+      {
+        id: "bad-bunny",
+        name: "Bad Bunny",
+        genre: "latin",
+        color: "#22c55e",
+        initials: "BB",
+        bio: "Benito Antonio Martínez Ocasio. Spotify's most-streamed global artist for multiple consecutive years. Refuses to sing in English on principle — and dominates anyway.",
+        spotifyUrl: "https://open.spotify.com/artist/4q3ewBCX7sLwd24euuV69X",
+        signatureTrack: "Tití Me Preguntó",
+      },
+    ],
+  },
+  {
+    id: "medellin",
+    name: "Comuna 13",
+    fullName: "Comuna 13, Medellín",
+    city: "Medellín",
+    country: "Colombia",
+    lat: 6.2654,
+    lng: -75.6298,
+    genre: "latin",
+    era: "2010 – present",
+    coverUrl: img("photo-1480714378408-67cf0d13bc1f"),
+    description:
+      "Once one of the most dangerous neighborhoods in the world, Comuna 13 reinvented itself through hip-hop, graffiti, and reggaetón culture. J Balvin grew up nearby in Medellín and helped take the genre from regional sound to global pop dominance.",
+    artists: [
+      {
+        id: "j-balvin",
+        name: "J Balvin",
+        genre: "latin",
+        color: "#eab308",
+        initials: "JB",
+        bio: "José Álvaro Osorio Balvín. The self-styled 'Latin Spider-Man.' Helped reggaetón cross into English-language pop charts with collabs like 'I Like It' and 'Mi Gente.'",
+        spotifyUrl: "https://open.spotify.com/artist/1vyhD5VmyZ7KMfW5gqLgo5",
+        signatureTrack: "Mi Gente",
+      },
+    ],
+  },
+  {
+    id: "mississippi-delta",
+    name: "The Delta",
+    fullName: "Mississippi Delta, Clarksdale",
+    city: "Clarksdale, MS",
+    country: "US",
+    lat: 34.1995,
+    lng: -90.5709,
+    genre: "blues",
+    era: "1920 – 1950",
+    coverUrl: img("photo-1508700929628-666bc8bd84ea"),
+    description:
+      "The Mississippi Delta is where the blues was born — cotton fields, juke joints, and the legendary Crossroads where Robert Johnson is said to have sold his soul. Every genre of American popular music traces a direct line back to these few hundred square miles.",
+    artists: [
+      {
+        id: "robert-johnson",
+        name: "Robert Johnson",
+        genre: "blues",
+        color: "#3b82f6",
+        initials: "RJ",
+        bio: "The most mythologized bluesman in history. Recorded only 29 songs before dying at 27, yet his guitar work became the foundation for rock and roll itself.",
+        spotifyUrl: "https://open.spotify.com/artist/2RVNXAfm7nXuipKxOhSr5b",
+        signatureTrack: "Cross Road Blues",
+      },
+      {
+        id: "muddy-waters",
+        name: "Muddy Waters",
+        genre: "blues",
+        color: "#1d4ed8",
+        initials: "MW",
+        bio: "McKinley Morganfield. Moved this Delta sound to Chicago and electrified it, directly inspiring the Rolling Stones — who named themselves after his song.",
+        spotifyUrl: "https://open.spotify.com/artist/5z7woVbDvnzgPaTGcsoIcS",
+        signatureTrack: "Mannish Boy",
+      },
+    ],
+  },
+  {
+    id: "sugar-hill-harlem",
+    name: "Sugar Hill",
+    fullName: "Sugar Hill, Harlem",
+    city: "New York, NY",
+    country: "US",
+    lat: 40.8268,
+    lng: -73.9418,
+    genre: "jazz",
+    era: "1920 – 1945",
+    coverUrl: img("photo-1496442226666-8d4d0e62e6e9"),
+    description:
+      "Sugar Hill was Harlem's most prestigious neighborhood during the Harlem Renaissance, home to Duke Ellington and the era's Black intellectual and artistic elite. A few blocks south, the Cotton Club hosted the orchestras that defined the swing era.",
+    artists: [
+      {
+        id: "duke-ellington",
+        name: "Duke Ellington",
+        genre: "jazz",
+        color: "#f59e0b",
+        initials: "DE",
+        bio: "Edward Kennedy Ellington. Led his orchestra at the Cotton Club for years, composing over 1,000 pieces and elevating jazz to the level of American classical music.",
+        spotifyUrl: "https://open.spotify.com/artist/2KAR1Iqyzfic9SLnsi3wOh",
+        signatureTrack: "Take the 'A' Train",
+      },
+    ],
+  },
+  {
+    id: "bankhead-atlanta",
+    name: "Bankhead",
+    fullName: "Bankhead, Northwest Atlanta",
+    city: "Atlanta, GA",
+    country: "US",
+    lat: 33.7700,
+    lng: -84.4485,
+    genre: "hip-hop",
+    era: "2010 – present",
+    coverUrl: img("photo-1477959858617-67f85cf4f1df"),
+    description:
+      "Bankhead and the surrounding Zone 6 neighborhoods are the bedrock of trap music. Gucci Mane and Migos both came up here, building the hi-hat-heavy, ad-lib-driven sound that became the dominant production style in hip-hop worldwide.",
+    artists: [
+      {
+        id: "gucci-mane",
+        name: "Gucci Mane",
+        genre: "hip-hop",
+        color: "#a855f7",
+        initials: "GM",
+        bio: "Radric Davis. 'The Trap God.' His prolific mixtape run in the 2000s-2010s directly mentored and influenced an entire generation of Atlanta artists.",
+        spotifyUrl: "https://open.spotify.com/artist/13y7CgLHjMVRMDqxdx0Xdo",
+        signatureTrack: "Lemonade",
+      },
+      {
+        id: "migos",
+        name: "Migos",
+        genre: "hip-hop",
+        color: "#ec4899",
+        initials: "MG",
+        bio: "Quavo, Offset, and Takeoff. From Gwinnett County via Atlanta's trap scene. 'Bad and Boujee' popularized the triplet flow that now defines mainstream rap cadence.",
+        spotifyUrl: "https://open.spotify.com/artist/6oMuImdp5ZcFhWP0ESe6mG",
+        signatureTrack: "Bad and Boujee",
+      },
+    ],
+  },
+  {
+    id: "fifth-ward-houston",
+    name: "Fifth Ward",
+    fullName: "Fifth Ward, Houston",
+    city: "Houston, TX",
+    country: "US",
+    lat: 29.7758,
+    lng: -95.3370,
+    genre: "hip-hop",
+    era: "1990 – present",
+    coverUrl: img("photo-1493676304819-0d7a8d026dcf"),
+    description:
+      "Houston's Fifth Ward birthed the chopped-and-screwed sound pioneered by DJ Screw, slowing down hip-hop to a syrupy crawl that became inseparable from Houston identity — and later directly shaped Travis Scott's psychedelic, druggy production style.",
+    artists: [
+      {
+        id: "travis-scott",
+        name: "Travis Scott",
         genre: "hip-hop",
         color: "#dc2626",
-        initials: "36",
-        bio: "DJ Paul and Juicy J. Won the Academy Award for Best Original Song in 2006. Invented the hypnotic Memphis rap sound that became the DNA of modern trap.",
-        spotifyUrl: "https://open.spotify.com/artist/3j2P5djBKYWjy7LKMzMEuA",
-        signatureTrack: "Stay Fly",
+        initials: "TS",
+        bio: "Jacques Webster. From Missouri City near Houston. Built his sound on Houston's chopped-and-screwed legacy, turning it into stadium-filling psychedelic trap.",
+        spotifyUrl: "https://open.spotify.com/artist/0Y5tJX1MQlPlqiwlOH1tJY",
+        signatureTrack: "SICKO MODE",
+      },
+    ],
+  },
+  {
+    id: "liberty-city-miami",
+    name: "Liberty City",
+    fullName: "Liberty City, Miami",
+    city: "Miami, FL",
+    country: "US",
+    lat: 25.8281,
+    lng: -80.2206,
+    genre: "hip-hop",
+    era: "2006 – present",
+    coverUrl: img("photo-1531058020387-3be344556be6"),
+    description:
+      "Liberty City is one of Miami's oldest Black neighborhoods and the launchpad for the city's bass-heavy hip-hop scene. Rick Ross built his larger-than-life persona out of these streets, turning Miami trap into a national sound.",
+    artists: [
+      {
+        id: "rick-ross",
+        name: "Rick Ross",
+        genre: "hip-hop",
+        color: "#f97316",
+        initials: "RR",
+        bio: "William Leonard Roberts II. 'The Boss.' Co-founded Maybach Music Group, turning Miami's luxury trap sound into a multi-platinum empire.",
+        spotifyUrl: "https://open.spotify.com/artist/1sBkRIssrMs1AbVkOJbc7a",
+        signatureTrack: "Hustlin'",
       },
     ],
   },
@@ -366,6 +661,7 @@ export const LOCATIONS: Location[] = [
     lng: -93.9400,
     genre: "hip-hop",
     era: "1992 – 2011",
+    coverUrl: img("photo-1429962714451-bb934ecdc4ec"),
     description:
       "A small industrial city in Southeast Texas that produced UGK — Bun B and Pimp C. They invented Southern hip-hop's trunk music sound: slow, syrupy beats built for riding with the trunk booming. Pimp C passed in 2007 but his production style defines an entire region.",
     artists: [
@@ -383,7 +679,7 @@ export const LOCATIONS: Location[] = [
   },
   {
     id: "east-harlem",
-    name: "Harlem",
+    name: "East Harlem",
     fullName: "East Harlem, Manhattan",
     city: "New York, NY",
     country: "US",
@@ -391,6 +687,7 @@ export const LOCATIONS: Location[] = [
     lng: -73.9371,
     genre: "hip-hop",
     era: "2011 – present",
+    coverUrl: img("photo-1483721310020-03333e577078"),
     description:
       "A$AP Rocky grew up in East Harlem housing projects and named his collective after the neighborhood (A$AP = Always Strive And Prosper). He merged Southern trap production with New York lyricism and made Harlem internationally relevant again.",
     artists: [
@@ -416,6 +713,7 @@ export const LOCATIONS: Location[] = [
     lng: -73.8648,
     genre: "hip-hop",
     era: "1973 – present",
+    coverUrl: img("photo-1605721911519-3dfeb3be25e7"),
     description:
       "Hip-hop was invented here. At 1520 Sedgwick Avenue on August 11, 1973, DJ Kool Herc threw a back-to-school party and isolated the percussion break of a funk record — the birth of breakbeat DJing. Everything after that came from this building.",
     artists: [
@@ -425,7 +723,7 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#dc2626",
         initials: "FJ",
-        bio: "Joseph Antonio Cartagena. Terror Squad. Crack Era Bronx embodied. One of the longest-running careers in hip-hop from the same block.",
+        bio: "Joseph Antonio Cartagena. Terror Squad. Crack-era Bronx embodied. One of the longest-running careers in hip-hop from the same block.",
         spotifyUrl: "https://open.spotify.com/artist/1Oa0bMld0A7sROyFaRJfUP",
         signatureTrack: "All the Way Up",
       },
@@ -451,6 +749,7 @@ export const LOCATIONS: Location[] = [
     lng: -122.1965,
     genre: "hip-hop",
     era: "1985 – present",
+    coverUrl: img("photo-1542204165-65bf26472b9b"),
     description:
       "Oakland's East Side produced hyphy music and the Bay Area's distinct sound. Too Short was rapping here before gangsta rap had a name. E-40 invented much of the slang that hip-hop still uses today. Oakland has one of the most underrated legacies in the genre.",
     artists: [
@@ -486,6 +785,7 @@ export const LOCATIONS: Location[] = [
     lng: -84.1699,
     genre: "hip-hop",
     era: "1991 – 2006",
+    coverUrl: img("photo-1546528377-79612d35c6c4"),
     description:
       "OutKast — André 3000 and Big Boi — grew up in East Point and Stone Mountain, suburban Atlanta. At the 1995 Source Awards, they were booed by a New York crowd. Big Boi said 'The South got something to say.' They proved it across six albums that expanded what rap could be.",
     artists: [
@@ -511,6 +811,7 @@ export const LOCATIONS: Location[] = [
     lng: -75.1611,
     genre: "hip-hop",
     era: "2008 – present",
+    coverUrl: img("photo-1470225620780-dba8ba36b745"),
     description:
       "Meek Mill grew up in North Philadelphia and has spent his career both escaping and returning to it — metaphorically and literally. His criminal justice advocacy after his own incarceration launched a national conversation about prison reform and bail conditions.",
     artists: [
@@ -526,13 +827,52 @@ export const LOCATIONS: Location[] = [
       },
     ],
   },
+  {
+    id: "memphis",
+    name: "Orange Mound",
+    fullName: "Orange Mound, East Memphis",
+    city: "Memphis, TN",
+    country: "US",
+    lat: 35.1273,
+    lng: -89.9759,
+    genre: "hip-hop",
+    era: "1991 – present",
+    coverUrl: img("photo-1514525253161-7a46d19cd819"),
+    description:
+      "Memphis produced one of the darkest, most original rap sounds in history — slow, horrorcore beats with triple-time rapping. Three 6 Mafia invented a style in Orange Mound that influenced everything from trap music to modern drill. They also became the first rap group to win an Oscar.",
+    artists: [
+      {
+        id: "three-6-mafia",
+        name: "Three 6 Mafia",
+        genre: "hip-hop",
+        color: "#dc2626",
+        initials: "36",
+        bio: "DJ Paul and Juicy J. Won the Academy Award for Best Original Song in 2006. Invented the hypnotic Memphis rap sound that became the DNA of modern trap.",
+        spotifyUrl: "https://open.spotify.com/artist/3j2P5djBKYWjy7LKMzMEuA",
+        signatureTrack: "Stay Fly",
+      },
+    ],
+  },
 ];
 
 export const GENRE_COLORS: Record<string, string> = {
-  "hip-hop": "#ef4444",
-  "grime":   "#6366f1",
-  "reggae":  "#22c55e",
-  "jazz":    "#f59e0b",
-  "blues":   "#3b82f6",
-  "country": "#a78bfa",
+  "hip-hop":  "#ef4444",
+  "grime":    "#6366f1",
+  "reggae":   "#22c55e",
+  "jazz":     "#f59e0b",
+  "blues":    "#3b82f6",
+  "country":  "#a78bfa",
+  "afrobeats":"#16a34a",
+  "latin":    "#eab308",
+};
+
+export const GENRE_LABELS: Record<string, string> = {
+  "hip-hop":  "Hip-Hop",
+  "grime":    "Grime",
+  "reggae":   "Reggae",
+  "jazz":     "Jazz",
+  "blues":    "Blues",
+  "country":  "Country",
+  "afrobeats":"Afrobeats",
+  "latin":    "Latin",
 };

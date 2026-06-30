@@ -29,6 +29,10 @@ const Map = dynamic(() => import("./Map"), {
   ),
 });
 
-export default function MapLoader() {
-  return <Map />;
+interface MapLoaderProps {
+  activeGenre: string;
+}
+
+export default function MapLoader({ activeGenre }: MapLoaderProps) {
+  return <Map activeGenre={activeGenre} />;
 }

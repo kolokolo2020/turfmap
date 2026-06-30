@@ -1,4 +1,4 @@
-export type Genre = "hip-hop" | "grime" | "reggae" | "jazz" | "blues" | "country";
+export type Genre = "hip-hop" | "grime" | "reggae" | "jazz" | "blues" | "country" | "afrobeats" | "latin";
 
 export interface Artist {
   id: string;
@@ -20,6 +20,7 @@ export interface Location {
   lat: number;
   lng: number;
   genre: Genre;
+  coverUrl: string;       // street/neighborhood photo shown in the panel
   description: string;   // why this place matters
   artists: Artist[];
   era: string;           // "2012 – present"

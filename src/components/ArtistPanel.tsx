@@ -1,7 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import { Location, Artist } from "@/lib/types";
-import { X, ExternalLink, MapPin } from "lucide-react";
+import { GENRE_LABELS } from "@/data/locations";
+import { X, MapPin, Calendar, Play } from "lucide-react";
 
 interface ArtistPanelProps {
   location: Location | null;
@@ -11,20 +13,33 @@ interface ArtistPanelProps {
 function ArtistCard({ artist }: { artist: Artist }) {
   return (
     <div
-      className="flex-none w-64 rounded-sm p-4 flex flex-col gap-3"
-      style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
+      className="flex-none w-72 rounded-md p-4 flex flex-col gap-3 transition-transform duration-200 hover:-translate-y-0.5"
+      style={{
+        background: `linear-gradient(165deg, ${artist.color}14 0%, rgba(255,255,255,0.03) 60%)`,
+        border: `1px solid ${artist.color}2e`,
+      }}
     >
       {/* Avatar + name row */}
       <div className="flex items-center gap-3">
         <div
-          className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 font-bold text-sm"
-          style={{ background: `${artist.color}22`, color: artist.color, border: `1.5px solid ${artist.color}44` }}
+          className="relative w-12 h-12 rounded-full flex items-center justify-center shrink-0 font-black text-sm"
+          style={{
+            background: `conic-gradient(from 180deg, ${artist.color}, ${artist.color}55, ${artist.color})`,
+            padding: "2px",
+          }}
         >
-          {artist.initials}
+          <div
+            className="w-full h-full rounded-full flex items-center justify-center"
+            style={{ background: "#0c0b0a", color: artist.color }}
+          >
+            {artist.initials}
+          </div>
         </div>
         <div className="min-w-0">
-          <p className="font-semibold text-sm text-white truncate">{artist.name}</p>
-          <p className="label mt-0.5" style={{ color: "var(--fg2)" }}>{artist.genre}</p>
+          <p className="font-bold text-[0.95rem] text-white truncate leading-tight">{artist.name}</p>
+          <p className="label mt-1" style={{ color: artist.color }}>
+            {GENRE_LABELS[artist.genre] ?? artist.genre}
+          </p>
         </div>
       </div>
 
@@ -34,25 +49,24 @@ function ArtistCard({ artist }: { artist: Artist }) {
       </p>
 
       {/* Signature track */}
-      <div
-        className="flex items-center justify-between p-2.5 rounded-sm"
-        style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
+      <a
+        href={artist.spotifyUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group flex items-center justify-between p-2.5 rounded-sm transition-colors"
+        style={{ background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.06)" }}
       >
         <div className="min-w-0 mr-2">
-          <p className="label mb-0.5" style={{ color: "var(--fg2)" }}>Signature Track</p>
+          <p className="label mb-0.5" style={{ color: "var(--fg3)" }}>Signature Track</p>
           <p className="text-xs font-semibold text-white truncate">{artist.signatureTrack}</p>
         </div>
-        <a
-          href={artist.spotifyUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-sm label transition-all hover:opacity-80"
-          style={{ background: "#1DB954", color: "#000" }}
-          onClick={(e) => e.stopPropagation()}
+        <span
+          className="shrink-0 w-7 h-7 flex items-center justify-center rounded-full transition-transform group-hover:scale-110"
+          style={{ background: "#1DB954" }}
         >
-          ▶
-        </a>
-      </div>
+          <Play className="w-3 h-3 fill-black text-black ml-0.5" />
+        </span>
+      </a>
     </div>
   );
 }
@@ -65,58 +79,80 @@ export default function ArtistPanel({ location, onClose }: ArtistPanelProps) {
       {/* Backdrop */}
       <div
         className="fixed inset-0 z-30"
-        style={{ background: "rgba(0,0,0,0.4)" }}
+        style={{ background: "rgba(0,0,0,0.5)" }}
         onClick={onClose}
       />
 
       {/* Panel */}
       <div
-        className="panel-enter fixed bottom-0 inset-x-0 z-40 max-h-[70dvh] flex flex-col rounded-t-xl overflow-hidden"
-        style={{ background: "var(--panel)", borderTop: "1px solid rgba(255,255,255,0.08)" }}
+        className="panel-enter fixed bottom-0 inset-x-0 z-40 max-h-[78dvh] flex flex-col rounded-t-xl overflow-hidden"
+        style={{ background: "var(--panel)", border: "1px solid rgba(255,255,255,0.08)", borderBottom: "none" }}
       >
-        {/* Handle */}
-        <div className="flex justify-center pt-3 pb-1">
-          <div className="w-9 h-1 rounded-full" style={{ background: "var(--fg3)" }} />
-        </div>
+        {/* Cover photo header */}
+        <div className="relative h-36 sm:h-44 shrink-0">
+          <Image
+            src={location.coverUrl}
+            alt={location.name}
+            fill
+            className="object-cover"
+            sizes="100vw"
+            priority
+          />
+          <div
+            className="absolute inset-0"
+            style={{ background: "linear-gradient(to top, var(--panel) 0%, rgba(12,11,10,0.55) 55%, rgba(12,11,10,0.15) 100%)" }}
+          />
 
-        {/* Header */}
-        <div className="flex items-start justify-between px-5 pt-3 pb-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <MapPin className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--fg2)" }} />
-              <span className="label" style={{ color: "var(--fg2)" }}>
-                {location.city} · {location.country} · {location.era}
-              </span>
-            </div>
-            <h2 className="text-xl font-bold text-white">{location.name}</h2>
-            <p className="text-xs mt-0.5" style={{ color: "var(--fg2)" }}>{location.fullName}</p>
+          {/* Drag handle */}
+          <div className="absolute top-3 inset-x-0 flex justify-center">
+            <div className="w-9 h-1 rounded-full" style={{ background: "rgba(255,255,255,0.4)" }} />
           </div>
+
+          {/* Close button */}
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-white/5 mt-0.5"
-            style={{ color: "var(--fg2)" }}
+            className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-black/40"
+            style={{ background: "rgba(0,0,0,0.4)", color: "white", backdropFilter: "blur(6px)" }}
           >
             <X className="w-4 h-4" />
           </button>
-        </div>
 
-        {/* Artist cards — horizontal scroll */}
-        <div className="flex gap-3 px-5 overflow-x-auto pb-4" style={{ scrollSnapType: "x mandatory" }}>
-          {location.artists.map((artist) => (
-            <div key={artist.id} style={{ scrollSnapAlign: "start" }}>
-              <ArtistCard artist={artist} />
+          {/* Title block over the photo */}
+          <div className="absolute bottom-0 inset-x-0 px-5 pb-4">
+            <div className="flex items-center gap-3 mb-1.5 flex-wrap">
+              <span className="label flex items-center gap-1" style={{ color: "rgba(255,255,255,0.75)" }}>
+                <MapPin className="w-3 h-3" />
+                {location.city} · {location.country}
+              </span>
+              <span className="label flex items-center gap-1" style={{ color: "rgba(255,255,255,0.75)" }}>
+                <Calendar className="w-3 h-3" />
+                {location.era}
+              </span>
             </div>
-          ))}
+            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-none">
+              {location.name}
+            </h2>
+            <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>{location.fullName}</p>
+          </div>
         </div>
 
-        {/* Description */}
-        <div
-          className="mx-5 mb-5 p-4 rounded-sm"
-          style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}
-        >
-          <p className="text-xs leading-relaxed" style={{ color: "var(--fg2)" }}>
-            {location.description}
-          </p>
+        {/* Scrollable content */}
+        <div className="overflow-y-auto">
+          {/* Artist cards */}
+          <div className="flex gap-3 px-5 pt-4 overflow-x-auto pb-1" style={{ scrollSnapType: "x mandatory" }}>
+            {location.artists.map((artist) => (
+              <div key={artist.id} style={{ scrollSnapAlign: "start" }}>
+                <ArtistCard artist={artist} />
+              </div>
+            ))}
+          </div>
+
+          {/* Description */}
+          <div className="mx-5 my-5 pl-4" style={{ borderLeft: "2px solid rgba(255,255,255,0.12)" }}>
+            <p className="text-sm leading-relaxed" style={{ color: "var(--fg2)" }}>
+              {location.description}
+            </p>
+          </div>
         </div>
       </div>
     </>
