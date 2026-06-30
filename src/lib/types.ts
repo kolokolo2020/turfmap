@@ -8,6 +8,7 @@ export interface Artist {
   initials: string;      // fallback when no photo
   imageUrl?: string;     // real photo — falls back to initials when absent
   bio: string;           // 1-2 sentences
+  albums?: string[];     // most notable releases
   spotifyUrl: string;
   signatureTrack: string;
 }
