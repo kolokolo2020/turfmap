@@ -7,6 +7,7 @@ import { Shuffle, Share2, Check } from "lucide-react";
 import { LOCATIONS, GENRE_COLORS } from "@/data/locations";
 import { Location } from "@/lib/types";
 import ArtistPanel from "./ArtistPanel";
+import SearchBar from "./SearchBar";
 
 // Get your free token at mapbox.com → account → tokens
 const TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? "";
@@ -255,6 +256,13 @@ export default function Map({ activeGenre }: MapProps) {
           >
             NEXT_PUBLIC_MAPBOX_TOKEN=pk.eyJ...
           </code>
+        </div>
+      )}
+
+      {/* Search */}
+      {TOKEN && (
+        <div className="absolute top-[68px] left-4 z-20">
+          <SearchBar onSelect={handleSelect} />
         </div>
       )}
 
