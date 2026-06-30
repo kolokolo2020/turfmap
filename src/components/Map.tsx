@@ -51,25 +51,20 @@ export default function Map({ activeGenre }: MapProps) {
 
     const map = new mapboxgl.Map({
       container: containerRef.current,
-      style: "mapbox://styles/mapbox/dark-v11",
+      // Real-world colors (green parks, blue water, beige roads) — like Google Maps.
+      style: "mapbox://styles/mapbox/streets-v12",
       center: [-40, 30],
       zoom: 2.2,
       minZoom: 1.5,
       maxZoom: 18,
-      projection: { name: "globe" } as mapboxgl.Projection,
+      // Flat Mercator, not globe — HTML markers track screen position reliably
+      // at every zoom level. The globe projection caused markers to visibly
+      // drift from their pinned coordinates during pan/zoom.
+      projection: { name: "mercator" } as mapboxgl.Projection,
       attributionControl: false,
     });
 
-    map.on("style.load", () => {
-      map.setFog({
-        color: "rgb(10, 10, 15)",
-        "high-color": "rgb(15, 10, 30)",
-        "horizon-blend": 0.04,
-        "space-color": "rgb(4, 4, 8)",
-        "star-intensity": 0.7,
-      });
-      setMapReady(true);
-    });
+    map.on("load", () => setMapReady(true));
 
     mapRef.current = map;
 

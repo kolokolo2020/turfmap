@@ -1,6 +1,7 @@
 import { Location } from "@/lib/types";
 
 const img = (id: string) => `https://images.unsplash.com/${id}?w=800&h=600&fit=crop&q=80`;
+const wiki = (path: string) => `https://upload.wikimedia.org/wikipedia/${path}`;
 
 export const LOCATIONS: Location[] = [
   {
@@ -15,7 +16,7 @@ export const LOCATIONS: Location[] = [
     era: "2012 – present",
     coverUrl: img("photo-1493225457124-a3eb161ffa5f"),
     description:
-      "A single block on Chicago's South Side that became the birthplace of drill music. Chief Keef's 'Love Sosa' was filmed here in 2012 and changed hip-hop forever. The block's name became shorthand for a generation of artists who used music as a way out.",
+      "A single block on Chicago's South Side that gave its name to an entire sub-genre. In 2012, low-budget YouTube videos shot on this corner went viral worldwide, turning a hyper-local Chicago sound into the dominant style of drill music heard from London to Lagos.",
     artists: [
       {
         id: "chief-keef",
@@ -23,7 +24,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#ef4444",
         initials: "CK",
-        bio: "Keith Farrelle Cozart grew up on O'Block. At 16, he signed to Interscope and made drill music a global genre.",
+        imageUrl: wiki("commons/thumb/6/64/Chief_Keef_2019_performance.jpg/330px-Chief_Keef_2019_performance.jpg"),
+        bio: "Keith Farrelle Cozart grew up on O'Block. At 16, he signed to Interscope and made drill music a global genre with 'Love Sosa.'",
         spotifyUrl: "https://open.spotify.com/artist/6mxWdMHgBv5FKGV9LRWGBF",
         signatureTrack: "Love Sosa",
       },
@@ -33,7 +35,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#f97316",
         initials: "CR",
-        bio: "Chancellor Bennett grew up blocks away. His mixtape 'Acid Rap' captured South Side life and made him the first artist to win a Grammy without selling a physical album.",
+        imageUrl: wiki("commons/thumb/3/3c/Chance_the_Rapper_-_Raising_Canes_Bicyle_Giveaway_2024-12-22_photo_by_Adam_Bielawski_%28cropped%29.jpg/330px-Chance_the_Rapper_-_Raising_Canes_Bicyle_Giveaway_2024-12-22_photo_by_Adam_Bielawski_%28cropped%29.jpg"),
+        bio: "Chancellor Bennett grew up blocks away. 'Acid Rap' made him the first artist to win a Grammy without selling a physical album.",
         spotifyUrl: "https://open.spotify.com/artist/1anyVhU62p31KFi8MEzkbf",
         signatureTrack: "Paranoia",
       },
@@ -51,7 +54,7 @@ export const LOCATIONS: Location[] = [
     era: "1990 – present",
     coverUrl: img("photo-1493676304819-0d7a8d026dcf"),
     description:
-      "The Marcy Houses public housing project in Bed-Stuy produced Jay-Z, one of the best-selling music artists of all time. Shawn Carter grew up in Building 5 and went on to become a billionaire, but the projects remain central to his identity and lyrics.",
+      "A 27-building public housing complex in Bed-Stuy, built in 1949 to house returning WWII veterans. By the late '80s it had become one of the era's busiest open-air drug markets — and the backdrop every rapper who grew up there would spend a career writing about.",
     artists: [
       {
         id: "jay-z",
@@ -59,7 +62,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#eab308",
         initials: "JZ",
-        bio: "Shawn Corey Carter. From selling crack in the Marcy stairwells to 14 Grammy wins, Jay-Z's entire catalog maps back to these buildings.",
+        imageUrl: wiki("commons/thumb/5/55/Jay-Z_meets_with_New_York_Senate_Majority_Leader_in_Albany_%28cropped%29.webp/330px-Jay-Z_meets_with_New_York_Senate_Majority_Leader_in_Albany_%28cropped%29.webp.png"),
+        bio: "Shawn Corey Carter grew up in Building 5. From selling crack in the stairwells to 14 Grammy wins and a billion-dollar net worth.",
         spotifyUrl: "https://open.spotify.com/artist/3nFkdlSjzX9mRTtwJOzDYB",
         signatureTrack: "Where I'm From",
       },
@@ -77,7 +81,7 @@ export const LOCATIONS: Location[] = [
     era: "1987 – present",
     coverUrl: img("photo-1477959858617-67f85cf4f1df"),
     description:
-      "The largest public housing project in North America. Per square foot, Queensbridge has produced more influential hip-hop artists than any other location on earth. Nas recorded 'Illmatic' about these courtyards — still widely considered the greatest rap album ever made.",
+      "The largest public housing development in North America — 96 buildings, 7,000 residents. Per square foot, no neighborhood on earth has produced more influential rap artists, a density that turned its courtyards into one of hip-hop's most mythologized settings.",
     artists: [
       {
         id: "nas",
@@ -85,7 +89,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#8b5cf6",
         initials: "N",
-        bio: "Nasir Bin Olu Jones. 'Illmatic' (1994) is a street-level documentary of life in QB. The first line: 'I never sleep, cause sleep is the cousin of death.'",
+        imageUrl: wiki("commons/thumb/b/be/Nas_%2852380600682%29_%28cropped%29.jpg/330px-Nas_%2852380600682%29_%28cropped%29.jpg"),
+        bio: "Nasir Bin Olu Jones. 'Illmatic' (1994) is a street-level documentary of QB life, still widely considered the greatest rap album ever made.",
         spotifyUrl: "https://open.spotify.com/artist/20qISvAhX20dpIbOOzGK3q",
         signatureTrack: "N.Y. State of Mind",
       },
@@ -95,7 +100,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#6366f1",
         initials: "MD",
-        bio: "Havoc and Prodigy. 'The Infamous' (1995) made the QB housing projects feel like the most dangerous and poetic place in America.",
+        imageUrl: wiki("commons/thumb/f/f6/Out4Fame-Festival_2015_-_Mobb_Deep_%28cropped%29.JPG/330px-Out4Fame-Festival_2015_-_Mobb_Deep_%28cropped%29.JPG"),
+        bio: "Havoc and Prodigy. 'The Infamous' (1995) made the QB housing projects feel like the most dangerous, poetic place in America.",
         spotifyUrl: "https://open.spotify.com/artist/0RFQbzOFRiPVgUBr9iEXS9",
         signatureTrack: "Shook Ones Pt. II",
       },
@@ -113,7 +119,7 @@ export const LOCATIONS: Location[] = [
     era: "1988 – present",
     coverUrl: img("photo-1480714378408-67cf0d13bc1f"),
     description:
-      "A city of 97,000 that put West Coast rap on the map. NWA's 'Straight Outta Compton' (1988) introduced reality rap to mainstream America. Three decades later, Kendrick Lamar won the Pulitzer Prize — first non-classical, non-jazz musician ever — writing about the same streets.",
+      "A working-class city of 97,000 south of downtown LA that became the epicenter of West Coast rap. NWA's 'Straight Outta Compton' (1988) introduced reality rap to mainstream America, putting a single zip code on the map for three decades running.",
     artists: [
       {
         id: "kendrick",
@@ -121,7 +127,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#10b981",
         initials: "KL",
-        bio: "Kendrick Duckworth. Grew up on Rosecrans Ave. Won the Pulitzer Prize for 'DAMN.' (2017). The most critically acclaimed rapper of his generation.",
+        imageUrl: wiki("commons/thumb/1/18/KendrickSZASPurs230725-144_%28cropped%29_desaturated.jpg/330px-KendrickSZASPurs230725-144_%28cropped%29_desaturated.jpg"),
+        bio: "Kendrick Duckworth grew up on Rosecrans Ave. Won the Pulitzer Prize for 'DAMN.' (2017) — the first non-classical, non-jazz musician ever to.",
         spotifyUrl: "https://open.spotify.com/artist/2YZyLoL8N0Wb9xBt1NhZWg",
         signatureTrack: "Alright",
       },
@@ -131,7 +138,7 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#3b82f6",
         initials: "DD",
-        bio: "Andre Romelle Young. Co-founded NWA, invented G-Funk, discovered Snoop Dogg, Eminem, 50 Cent, and Kendrick. The most influential producer in hip-hop history.",
+        bio: "Andre Romelle Young co-founded NWA here, invented G-Funk, and discovered Snoop Dogg, Eminem, 50 Cent, and Kendrick.",
         spotifyUrl: "https://open.spotify.com/artist/6DPYiyq5kWVQS4RGwxzPC7",
         signatureTrack: "Still D.R.E.",
       },
@@ -149,7 +156,7 @@ export const LOCATIONS: Location[] = [
     era: "2009 – present",
     coverUrl: img("photo-1518609878373-06d740f60d8b"),
     description:
-      "Drake grew up in the Forest Hill neighborhood of Toronto. His childhood home at 2906 Weston Road became the backdrop for some of rap's most introspective music. He turned Toronto — a city with no hip-hop identity — into one of the most referenced cities in the genre.",
+      "A leafy, affluent Toronto neighborhood with no rap pedigree whatsoever before one resident decided to change that. A childhood home on Weston Road became the backdrop for music that single-handedly rewired how the world thought about Canadian hip-hop.",
     artists: [
       {
         id: "drake",
@@ -157,7 +164,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#f59e0b",
         initials: "DR",
-        bio: "Aubrey Drake Graham. Started as an actor on Degrassi, became the best-selling digital singles artist in history. '6 God' made Toronto cool.",
+        imageUrl: wiki("commons/thumb/1/15/Drake_at_The_Carter_Effect_2017_%2836818935200%29_%28cropped%29.jpg/330px-Drake_at_The_Carter_Effect_2017_%2836818935200%29_%28cropped%29.jpg"),
+        bio: "Aubrey Drake Graham started as an actor on Degrassi before becoming the best-selling digital singles artist in history. '6 God' made Toronto cool.",
         spotifyUrl: "https://open.spotify.com/artist/3TVXtAsR1Inumwj472S9r4",
         signatureTrack: "Started From the Bottom",
       },
@@ -175,7 +183,7 @@ export const LOCATIONS: Location[] = [
     era: "2011 – present",
     coverUrl: img("photo-1516450360452-9312f5e86fc7"),
     description:
-      "The Weeknd — Abel Tesfaye — grew up in Scarborough, Toronto's rough east end. He dropped three free mixtapes in 2011 that redefined R&B and created the template for dark, atmospheric pop that every major label spent a decade trying to replicate.",
+      "Toronto's sprawling, working-class east end — a patchwork of immigrant communities far removed from the city's downtown polish. Its anonymity became part of the appeal: a place dark and atmospheric enough to birth an entirely new strain of R&B.",
     artists: [
       {
         id: "the-weeknd",
@@ -183,7 +191,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#ec4899",
         initials: "TW",
-        bio: "Abel Makkonen Tesfaye. Grew up in Scarborough, dropped 'Trilogy' for free and changed R&B permanently. Has sold over 75 million records worldwide.",
+        imageUrl: wiki("commons/thumb/a/a0/The_Weeknd_Portrait_by_Brian_Ziff.jpg/330px-The_Weeknd_Portrait_by_Brian_Ziff.jpg"),
+        bio: "Abel Tesfaye dropped three free mixtapes in 2011 as 'Trilogy,' creating a template for dark, atmospheric pop now copied across the industry.",
         spotifyUrl: "https://open.spotify.com/artist/1Xyo4u8uXC1ZmMpatF05PJ",
         signatureTrack: "The Hills",
       },
@@ -201,7 +210,7 @@ export const LOCATIONS: Location[] = [
     era: "1999 – present",
     coverUrl: img("photo-1531058020387-3be344556be6"),
     description:
-      "Lil Wayne grew up in the Hollygrove neighborhood of New Orleans. He signed to Cash Money Records at 9 years old and by his teens was already recording. His 'Tha Carter III' (2008) sold 1 million copies in its first week — one of the last albums to ever do that.",
+      "A modest residential pocket of New Orleans' 17th Ward, far from the tourist French Quarter. It produced one of the most prolific recording careers in rap history — and one of the last artists to sell a million physical records in a single week.",
     artists: [
       {
         id: "lil-wayne",
@@ -209,7 +218,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#a78bfa",
         initials: "LW",
-        bio: "Dwayne Michael Carter Jr. The self-proclaimed best rapper alive. Signed to Cash Money at 9, released 'Tha Carter III' at 25 to universal acclaim.",
+        imageUrl: wiki("commons/thumb/1/12/Lil_Wayne_Feb._2020.jpg/330px-Lil_Wayne_Feb._2020.jpg"),
+        bio: "Dwayne Michael Carter Jr., the self-proclaimed best rapper alive, signed to Cash Money Records here at age nine.",
         spotifyUrl: "https://open.spotify.com/artist/55Aa2cqylxrFIXC767Z865",
         signatureTrack: "A Milli",
       },
@@ -227,7 +237,7 @@ export const LOCATIONS: Location[] = [
     era: "1995 – present",
     coverUrl: img("photo-1429962714451-bb934ecdc4ec"),
     description:
-      "8 Mile Road is the physical dividing line between Detroit and its northern suburbs. Eminem grew up on the Detroit side — poor, white, and surrounded by a predominantly Black art form he was completely obsessed with. He became the best-selling rap artist of all time.",
+      "The literal dividing line between Detroit proper and its whiter, wealthier northern suburbs — a road that's come to symbolize the racial and economic fault lines of the entire city, immortalized in the 2002 film of the same name.",
     artists: [
       {
         id: "eminem",
@@ -235,7 +245,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#f97316",
         initials: "EM",
-        bio: "Marshall Bruce Mathers III. The best-selling rap artist of all time, with over 220 million records sold. Dr. Dre discovered him at the Rap Olympics freestyle competition in LA.",
+        imageUrl: wiki("commons/thumb/0/0f/Eminem_2021_Color_Corrected.jpg/330px-Eminem_2021_Color_Corrected.jpg"),
+        bio: "Marshall Bruce Mathers III grew up on the Detroit side, poor and white in a predominantly Black art form. Became the best-selling rap artist of all time.",
         spotifyUrl: "https://open.spotify.com/artist/7dGJo4pcD2V6oG8kP0tJRR",
         signatureTrack: "Lose Yourself",
       },
@@ -253,7 +264,7 @@ export const LOCATIONS: Location[] = [
     era: "2003 – present",
     coverUrl: img("photo-1483721310020-03333e577078"),
     description:
-      "Kendrick Lamar grew up at 1026 W. Grape Street in Watts — the project neighborhood of Compton. The contrast between Watts and its wealthier surroundings shaped 'To Pimp a Butterfly,' a jazz-infused meditation on Black identity in America.",
+      "A historically Black neighborhood scarred by the 1965 Watts Riots and decades of disinvestment since, sitting in the shadow of the Watts Towers. Its tension with wealthier neighboring areas became raw material for one of the decade's defining albums.",
     artists: [
       {
         id: "kendrick-watts",
@@ -261,7 +272,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#10b981",
         initials: "KL",
-        bio: "Also tied to Watts — Kendrick's early life split between Watts and Compton. His music documents both with street-journalist precision.",
+        imageUrl: wiki("commons/thumb/1/18/KendrickSZASPurs230725-144_%28cropped%29_desaturated.jpg/330px-KendrickSZASPurs230725-144_%28cropped%29_desaturated.jpg"),
+        bio: "Kendrick's early life split between Watts and neighboring Compton — the friction between them runs through 'To Pimp a Butterfly.'",
         spotifyUrl: "https://open.spotify.com/artist/2YZyLoL8N0Wb9xBt1NhZWg",
         signatureTrack: "King Kunta",
       },
@@ -279,7 +291,7 @@ export const LOCATIONS: Location[] = [
     era: "2007 – present",
     coverUrl: img("photo-1605721911519-3dfeb3be25e7"),
     description:
-      "Peckham in South London is ground zero for UK drill and grime. Central Cee grew up here. The neighborhood's multicultural energy produced a uniquely British sound that blended Jamaican patois, London slang, and American trap production.",
+      "A South London neighborhood with one of the city's most multicultural populations, blending Caribbean, West African, and white working-class communities into a single dense postcode — the exact mix that birthed UK drill's signature sound.",
     artists: [
       {
         id: "central-cee",
@@ -287,7 +299,8 @@ export const LOCATIONS: Location[] = [
         genre: "grime",
         color: "#06b6d4",
         initials: "CC",
-        bio: "Oakley Neil H T Caesar-Su. From Peckham. His mixtape 'Wild West' debuted at #1 in the UK and made him the dominant voice of UK rap in the 2020s.",
+        imageUrl: wiki("commons/thumb/3/30/Central_cee-5.jpg/330px-Central_cee-5.jpg"),
+        bio: "Oakley Caesar-Su's mixtape 'Wild West' debuted at #1 in the UK, making him the dominant voice of UK rap in the 2020s.",
         spotifyUrl: "https://open.spotify.com/artist/3uwAm6vQy7kQFD7VH9GROJ",
         signatureTrack: "Loading",
       },
@@ -305,7 +318,7 @@ export const LOCATIONS: Location[] = [
     era: "2014 – present",
     coverUrl: img("photo-1542204165-65bf26472b9b"),
     description:
-      "Brixton is one of London's most historically Black neighborhoods and a hotbed of UK grime and rap. Stormzy grew up nearby in Thornton Heath. His Glastonbury headline set in 2019 — the first Black British solo artist ever — was a cultural milestone.",
+      "One of London's most historically Black neighborhoods, shaped by Windrush-generation Caribbean immigrants and the site of major race riots in 1981 and 1985. Its market streets and pirate-radio history run through decades of UK Black music.",
     artists: [
       {
         id: "stormzy",
@@ -313,7 +326,8 @@ export const LOCATIONS: Location[] = [
         genre: "grime",
         color: "#6366f1",
         initials: "ST",
-        bio: "Michael Ebenazer Kwadjo Omari Owuo Jr. Headlined Glastonbury 2019 wearing a Union Jack stab vest designed by Banksy. Defined UK grime for a generation.",
+        imageUrl: wiki("commons/thumb/6/62/StormzyO2270322_%2834_of_77%29_%28cropped%29.jpg/330px-StormzyO2270322_%2834_of_77%29_%28cropped%29.jpg"),
+        bio: "Michael Omari's 2019 Glastonbury headline set — the first by a Black British solo artist — became a defining UK grime moment.",
         spotifyUrl: "https://open.spotify.com/artist/1Fpu6dA0JRgCfGwcqzKmFn",
         signatureTrack: "Vossi Bop",
       },
@@ -331,7 +345,7 @@ export const LOCATIONS: Location[] = [
     era: "2002 – present",
     coverUrl: img("photo-1546528377-79612d35c6c4"),
     description:
-      "Tottenham is where grime itself was forged — pirate radio stacks, MCs trading bars over jungle breaks. Skepta grew up here and carried the sound from estate stairwells to a Mercury Prize, proving grime could be both raw and globally dominant.",
+      "Grime itself was forged here — pirate radio aerials on tower-block roofs, MCs trading bars over jungle breaks in council estate stairwells. The genre's entire DNA, from its slang to its sub-bass, traces back to a handful of North London postcodes.",
     artists: [
       {
         id: "skepta",
@@ -339,7 +353,8 @@ export const LOCATIONS: Location[] = [
         genre: "grime",
         color: "#facc15",
         initials: "SK",
-        bio: "Joseph Junior Adenuga. Boy Better Know founder. Won the 2016 Mercury Prize for 'Konnichiwa,' the album that took grime out of London and onto the world stage.",
+        imageUrl: wiki("commons/thumb/0/04/Skepta_2025_%28cropped%29.jpg/330px-Skepta_2025_%28cropped%29.jpg"),
+        bio: "Joseph Adenuga's Boy Better Know crew and 2016 Mercury Prize win took grime from estate stairwells to the world stage.",
         spotifyUrl: "https://open.spotify.com/artist/2N28RhBVeOlu0CDeucXOEM",
         signatureTrack: "Shutdown",
       },
@@ -357,7 +372,7 @@ export const LOCATIONS: Location[] = [
     era: "1963 – 1981",
     coverUrl: img("photo-1508700929628-666bc8bd84ea"),
     description:
-      "Trenchtown is the neighborhood in Kingston, Jamaica where Bob Marley and the Wailers formed. Living in government yards, Marley developed the reggae sound that would spread globally. He remains the most recognizable musician Jamaica has ever produced.",
+      "A government-housing development built on a drained swamp in West Kingston, named for the trench that once ran through it. Its communal yards became an incubator for a sound that would carry Jamaican culture to every corner of the globe.",
     artists: [
       {
         id: "bob-marley",
@@ -365,7 +380,8 @@ export const LOCATIONS: Location[] = [
         genre: "reggae",
         color: "#22c55e",
         initials: "BM",
-        bio: "Robert Nesta Marley. Born in Nine Mile, grew up in Trenchtown. Created a musical movement that became a global philosophy. 'Legend' is the best-selling reggae album of all time.",
+        imageUrl: wiki("commons/thumb/2/2d/Bob_Marley_1976_press_photo.jpg/330px-Bob_Marley_1976_press_photo.jpg"),
+        bio: "Robert Nesta Marley formed the Wailers in these government yards. 'Legend' remains the best-selling reggae album of all time.",
         spotifyUrl: "https://open.spotify.com/artist/2QsynagSdAqZj3U9HgDzjD",
         signatureTrack: "No Woman, No Cry",
       },
@@ -383,7 +399,7 @@ export const LOCATIONS: Location[] = [
     era: "2003 – present",
     coverUrl: img("photo-1493225457124-a3eb161ffa5f"),
     description:
-      "Waterhouse produced the riddim section that built dancehall's modern sound, and Vybz Kartel — the genre's most controversial and influential voice — came up performing in its street dances before becoming dancehall's biggest star worldwide.",
+      "A dense, working-class Kingston district that became dancehall's production engine — its open-air street dances doubled as a proving ground where unsigned DJs and selectors built the riddims that shaped the genre's modern era.",
     artists: [
       {
         id: "vybz-kartel",
@@ -391,7 +407,8 @@ export const LOCATIONS: Location[] = [
         genre: "reggae",
         color: "#f43f5e",
         initials: "VK",
-        bio: "Adidja Palmer. The most influential dancehall artist of his generation, known as the 'Worl' Boss.' His sound shaped Afrobeats, drill, and Caribbean pop alike.",
+        imageUrl: wiki("commons/0/09/Vybz_Kartel_at_Freedom_Street_concert.jpg"),
+        bio: "Adidja Palmer, known as the 'Worl' Boss,' became dancehall's most influential and controversial voice, his sound later shaping Afrobeats and drill.",
         spotifyUrl: "https://open.spotify.com/artist/1tqg9DNRRn8ZSdJORlMy8b",
         signatureTrack: "Fever",
       },
@@ -409,7 +426,7 @@ export const LOCATIONS: Location[] = [
     era: "2010 – present",
     coverUrl: img("photo-1483721310020-03333e577078"),
     description:
-      "Ajegunle — 'AJ City' — is one of Lagos's densest, most musically prolific neighborhoods. It's been a launching pad for decades of Nigerian street music and helped shape the raw, percussive energy that fed into the global Afrobeats explosion.",
+      "Known locally as 'AJ City,' one of Lagos's densest and most musically prolific neighborhoods. For decades it's been a launching pad for raw Nigerian street music — the percussive, low-budget energy that fed directly into the global Afrobeats explosion.",
     artists: [
       {
         id: "burna-boy",
@@ -417,7 +434,8 @@ export const LOCATIONS: Location[] = [
         genre: "afrobeats",
         color: "#16a34a",
         initials: "BB",
-        bio: "Damini Ogulu. From Port Harcourt by way of Lagos. Won the Grammy for Best Global Music Album with 'Twice as Tall,' calling himself the 'African Giant.'",
+        imageUrl: wiki("commons/thumb/c/ce/Untold_2024_-Burna_Boy_%2853926047977%29_%28cropped%29.jpg/330px-Untold_2024_-Burna_Boy_%2853926047977%29_%28cropped%29.jpg"),
+        bio: "Damini Ogulu won the Grammy for Best Global Music Album with 'Twice as Tall,' calling himself the 'African Giant.'",
         spotifyUrl: "https://open.spotify.com/artist/5a2EaR3hamoenG9rDuVn8j",
         signatureTrack: "Last Last",
       },
@@ -435,7 +453,7 @@ export const LOCATIONS: Location[] = [
     era: "2011 – present",
     coverUrl: img("photo-1518609878373-06d740f60d8b"),
     description:
-      "A chaotic, beloved bus-stop neighborhood in Surulere that Wizkid immortalized in his breakout single of the same name. 'Ojuelegba' became an anthem for hustling out of Lagos's busiest, loudest streets — and helped launch Afrobeats onto Western radio.",
+      "A chaotic, beloved bus-stop intersection in Surulere — one of Lagos's busiest and loudest junctions, where danfo buses, hawkers, and commuters collide every day. The hustle of getting through it became a metaphor for hustling out of Lagos entirely.",
     artists: [
       {
         id: "wizkid",
@@ -443,7 +461,8 @@ export const LOCATIONS: Location[] = [
         genre: "afrobeats",
         color: "#0ea5e9",
         initials: "WK",
-        bio: "Ayodeji Balogun. One of the architects of modern Afrobeats. His feature on Drake's 'One Dance' became the most-streamed song in Spotify history at the time.",
+        imageUrl: wiki("commons/thumb/b/b6/Artworks-UWHjOik17qMFy0Sb-64tibA-t500x500.jpg/330px-Artworks-UWHjOik17qMFy0Sb-64tibA-t500x500.jpg"),
+        bio: "Ayodeji Balogun's feature on Drake's 'One Dance' became the most-streamed song in Spotify history at the time, breaking Afrobeats into Western radio.",
         spotifyUrl: "https://open.spotify.com/artist/3tVQdUvClmAT7URs9V3rsh",
         signatureTrack: "Ojuelegba",
       },
@@ -461,7 +480,7 @@ export const LOCATIONS: Location[] = [
     era: "2016 – present",
     coverUrl: img("photo-1518609878373-06d740f60d8b"),
     description:
-      "Bad Bunny grew up in nearby Vega Baja and broke out performing in San Juan, busking and recording in his bedroom before becoming the most-streamed artist in the world. He turned Puerto Rican slang and reggaetón into a dominant global sound.",
+      "A historic, artsy district of San Juan packed with murals, plazas, and underground clubs. It became a stage for bedroom-recorded reggaetón that would go on to outstream every other genre on earth without ever switching to English.",
     artists: [
       {
         id: "bad-bunny",
@@ -469,7 +488,8 @@ export const LOCATIONS: Location[] = [
         genre: "latin",
         color: "#22c55e",
         initials: "BB",
-        bio: "Benito Antonio Martínez Ocasio. Spotify's most-streamed global artist for multiple consecutive years. Refuses to sing in English on principle — and dominates anyway.",
+        imageUrl: wiki("commons/thumb/b/b1/Bad_Bunny_2019_by_Glenn_Francis_%28cropped%29.jpg/330px-Bad_Bunny_2019_by_Glenn_Francis_%28cropped%29.jpg"),
+        bio: "Benito Martínez Ocasio became Spotify's most-streamed global artist for multiple consecutive years, refusing to sing in English on principle.",
         spotifyUrl: "https://open.spotify.com/artist/4q3ewBCX7sLwd24euuV69X",
         signatureTrack: "Tití Me Preguntó",
       },
@@ -487,7 +507,7 @@ export const LOCATIONS: Location[] = [
     era: "2010 – present",
     coverUrl: img("photo-1480714378408-67cf0d13bc1f"),
     description:
-      "Once one of the most dangerous neighborhoods in the world, Comuna 13 reinvented itself through hip-hop, graffiti, and reggaetón culture. J Balvin grew up nearby in Medellín and helped take the genre from regional sound to global pop dominance.",
+      "Once ranked among the most dangerous neighborhoods on earth during Colombia's cartel era, Comuna 13 has since reinvented itself through street art, hip-hop, and outdoor escalators — a hillside slum turned symbol of the city's transformation.",
     artists: [
       {
         id: "j-balvin",
@@ -495,7 +515,8 @@ export const LOCATIONS: Location[] = [
         genre: "latin",
         color: "#eab308",
         initials: "JB",
-        bio: "José Álvaro Osorio Balvín. The self-styled 'Latin Spider-Man.' Helped reggaetón cross into English-language pop charts with collabs like 'I Like It' and 'Mi Gente.'",
+        imageUrl: wiki("commons/thumb/0/0c/J_Balvin%2C_Noisey_Meets%3B_Oct_2018.jpg/330px-J_Balvin%2C_Noisey_Meets%3B_Oct_2018.jpg"),
+        bio: "José Balvín, the self-styled 'Latin Spider-Man,' helped reggaetón cross into English-language pop charts with 'I Like It' and 'Mi Gente.'",
         spotifyUrl: "https://open.spotify.com/artist/1vyhD5VmyZ7KMfW5gqLgo5",
         signatureTrack: "Mi Gente",
       },
@@ -513,7 +534,7 @@ export const LOCATIONS: Location[] = [
     era: "1920 – 1950",
     coverUrl: img("photo-1508700929628-666bc8bd84ea"),
     description:
-      "The Mississippi Delta is where the blues was born — cotton fields, juke joints, and the legendary Crossroads where Robert Johnson is said to have sold his soul. Every genre of American popular music traces a direct line back to these few hundred square miles.",
+      "Flat cotton-field country between two rivers, dotted with juke joints and sharecropper shacks. At the legendary Crossroads in Clarksdale, blues was born from field hollers and church spirituals — the root from which jazz, rock, and hip-hop all eventually grew.",
     artists: [
       {
         id: "robert-johnson",
@@ -521,7 +542,8 @@ export const LOCATIONS: Location[] = [
         genre: "blues",
         color: "#3b82f6",
         initials: "RJ",
-        bio: "The most mythologized bluesman in history. Recorded only 29 songs before dying at 27, yet his guitar work became the foundation for rock and roll itself.",
+        imageUrl: wiki("en/b/b3/Robert_Johnson.png"),
+        bio: "The most mythologized bluesman in history — said to have sold his soul at the Crossroads. Recorded only 29 songs before dying at 27.",
         spotifyUrl: "https://open.spotify.com/artist/2RVNXAfm7nXuipKxOhSr5b",
         signatureTrack: "Cross Road Blues",
       },
@@ -531,7 +553,8 @@ export const LOCATIONS: Location[] = [
         genre: "blues",
         color: "#1d4ed8",
         initials: "MW",
-        bio: "McKinley Morganfield. Moved this Delta sound to Chicago and electrified it, directly inspiring the Rolling Stones — who named themselves after his song.",
+        imageUrl: wiki("commons/thumb/c/ce/Muddy_Waters_november_1976.jpg/330px-Muddy_Waters_november_1976.jpg"),
+        bio: "McKinley Morganfield carried the Delta sound to Chicago and electrified it, directly inspiring the Rolling Stones — who took their name from his song.",
         spotifyUrl: "https://open.spotify.com/artist/5z7woVbDvnzgPaTGcsoIcS",
         signatureTrack: "Mannish Boy",
       },
@@ -549,7 +572,7 @@ export const LOCATIONS: Location[] = [
     era: "1920 – 1945",
     coverUrl: img("photo-1496442226666-8d4d0e62e6e9"),
     description:
-      "Sugar Hill was Harlem's most prestigious neighborhood during the Harlem Renaissance, home to Duke Ellington and the era's Black intellectual and artistic elite. A few blocks south, the Cotton Club hosted the orchestras that defined the swing era.",
+      "Harlem's most prestigious address during the Harlem Renaissance, home to the era's Black intellectual and artistic elite. A few blocks south, the whites-only Cotton Club paradoxically hosted the era's greatest Black orchestras for white audiences.",
     artists: [
       {
         id: "duke-ellington",
@@ -557,7 +580,8 @@ export const LOCATIONS: Location[] = [
         genre: "jazz",
         color: "#f59e0b",
         initials: "DE",
-        bio: "Edward Kennedy Ellington. Led his orchestra at the Cotton Club for years, composing over 1,000 pieces and elevating jazz to the level of American classical music.",
+        imageUrl: wiki("commons/thumb/a/af/Duke_Ellington_-_publicity.JPG/330px-Duke_Ellington_-_publicity.JPG"),
+        bio: "Edward 'Duke' Ellington led his orchestra at the Cotton Club, composing over 1,000 pieces and elevating jazz to American classical music.",
         spotifyUrl: "https://open.spotify.com/artist/2KAR1Iqyzfic9SLnsi3wOh",
         signatureTrack: "Take the 'A' Train",
       },
@@ -575,7 +599,7 @@ export const LOCATIONS: Location[] = [
     era: "2010 – present",
     coverUrl: img("photo-1477959858617-67f85cf4f1df"),
     description:
-      "Bankhead and the surrounding Zone 6 neighborhoods are the bedrock of trap music. Gucci Mane and Migos both came up here, building the hi-hat-heavy, ad-lib-driven sound that became the dominant production style in hip-hop worldwide.",
+      "Bankhead and the surrounding Zone 6 neighborhoods are the bedrock of trap music — block after block of studios and corner-store mixtape culture that built the hi-hat-heavy, ad-lib-driven production style now dominant across mainstream hip-hop.",
     artists: [
       {
         id: "gucci-mane",
@@ -583,7 +607,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#a855f7",
         initials: "GM",
-        bio: "Radric Davis. 'The Trap God.' His prolific mixtape run in the 2000s-2010s directly mentored and influenced an entire generation of Atlanta artists.",
+        imageUrl: wiki("commons/thumb/8/89/Gucci_Mane%2C_Clout_Festival_2024_%28cropped%29.jpg/330px-Gucci_Mane%2C_Clout_Festival_2024_%28cropped%29.jpg"),
+        bio: "Radric Davis, 'The Trap God,' built a relentless 2000s–2010s mixtape run that directly mentored an entire generation of Atlanta artists.",
         spotifyUrl: "https://open.spotify.com/artist/13y7CgLHjMVRMDqxdx0Xdo",
         signatureTrack: "Lemonade",
       },
@@ -593,7 +618,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#ec4899",
         initials: "MG",
-        bio: "Quavo, Offset, and Takeoff. From Gwinnett County via Atlanta's trap scene. 'Bad and Boujee' popularized the triplet flow that now defines mainstream rap cadence.",
+        imageUrl: wiki("commons/thumb/5/5b/Migos_Veld_festival_2017.jpg/330px-Migos_Veld_festival_2017.jpg"),
+        bio: "Quavo, Offset, and Takeoff's 'Bad and Boujee' popularized the triplet flow that now defines mainstream rap cadence worldwide.",
         spotifyUrl: "https://open.spotify.com/artist/6oMuImdp5ZcFhWP0ESe6mG",
         signatureTrack: "Bad and Boujee",
       },
@@ -611,7 +637,7 @@ export const LOCATIONS: Location[] = [
     era: "1990 – present",
     coverUrl: img("photo-1493676304819-0d7a8d026dcf"),
     description:
-      "Houston's Fifth Ward birthed the chopped-and-screwed sound pioneered by DJ Screw, slowing down hip-hop to a syrupy crawl that became inseparable from Houston identity — and later directly shaped Travis Scott's psychedelic, druggy production style.",
+      "A historically Black ward in northeast Houston that birthed chopped-and-screwed — DJ Screw's technique of slowing hip-hop to a syrupy crawl, inseparable from Houston car culture and the region's codeine-influenced identity.",
     artists: [
       {
         id: "travis-scott",
@@ -619,7 +645,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#dc2626",
         initials: "TS",
-        bio: "Jacques Webster. From Missouri City near Houston. Built his sound on Houston's chopped-and-screwed legacy, turning it into stadium-filling psychedelic trap.",
+        imageUrl: wiki("commons/thumb/9/96/2025-0120_Cole_Gahagan_Michael_Rubin_Travis_Scott_%28cropped%29.jpg/330px-2025-0120_Cole_Gahagan_Michael_Rubin_Travis_Scott_%28cropped%29.jpg"),
+        bio: "Jacques Webster built his sound on Houston's chopped-and-screwed legacy, turning it into stadium-filling psychedelic trap.",
         spotifyUrl: "https://open.spotify.com/artist/0Y5tJX1MQlPlqiwlOH1tJY",
         signatureTrack: "SICKO MODE",
       },
@@ -637,7 +664,7 @@ export const LOCATIONS: Location[] = [
     era: "2006 – present",
     coverUrl: img("photo-1531058020387-3be344556be6"),
     description:
-      "Liberty City is one of Miami's oldest Black neighborhoods and the launchpad for the city's bass-heavy hip-hop scene. Rick Ross built his larger-than-life persona out of these streets, turning Miami trap into a national sound.",
+      "One of Miami's oldest Black neighborhoods, built in the 1930s as the city's first planned community for Black residents under segregation. It became the launchpad for Miami's bass-heavy, luxury-obsessed trap sound.",
     artists: [
       {
         id: "rick-ross",
@@ -645,7 +672,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#f97316",
         initials: "RR",
-        bio: "William Leonard Roberts II. 'The Boss.' Co-founded Maybach Music Group, turning Miami's luxury trap sound into a multi-platinum empire.",
+        imageUrl: wiki("commons/thumb/1/13/Rick_Ross_in_the_trap%21_%28cropped%29.jpg/330px-Rick_Ross_in_the_trap%21_%28cropped%29.jpg"),
+        bio: "William Roberts, 'The Boss,' co-founded Maybach Music Group, turning a larger-than-life persona into a multi-platinum empire.",
         spotifyUrl: "https://open.spotify.com/artist/1sBkRIssrMs1AbVkOJbc7a",
         signatureTrack: "Hustlin'",
       },
@@ -663,7 +691,7 @@ export const LOCATIONS: Location[] = [
     era: "1992 – 2011",
     coverUrl: img("photo-1429962714451-bb934ecdc4ec"),
     description:
-      "A small industrial city in Southeast Texas that produced UGK — Bun B and Pimp C. They invented Southern hip-hop's trunk music sound: slow, syrupy beats built for riding with the trunk booming. Pimp C passed in 2007 but his production style defines an entire region.",
+      "A small oil-refinery city on the Texas Gulf Coast, far from any hip-hop hub. Its isolation produced a uniquely regional sound — slow, syrupy, trunk-rattling — that became the blueprint for Southern hip-hop as a whole.",
     artists: [
       {
         id: "ugk",
@@ -671,7 +699,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#78350f",
         initials: "UG",
-        bio: "Bun B and Pimp C. Underground Kingz. From Port Arthur, TX. Created the template for Southern hip-hop. Jay-Z flew them to NYC for 'Big Pimpin',' the biggest record of the summer of 2000.",
+        imageUrl: wiki("en/thumb/0/0b/Underground_Kingz.jpg/330px-Underground_Kingz.jpg"),
+        bio: "Bun B and the late Pimp C — Underground Kingz. Jay-Z flew them to NYC for 'Big Pimpin',' the biggest record of summer 2000.",
         spotifyUrl: "https://open.spotify.com/artist/41B0Nfq2n2N2mFAhJa7Nph",
         signatureTrack: "Int'l Players Anthem",
       },
@@ -689,7 +718,7 @@ export const LOCATIONS: Location[] = [
     era: "2011 – present",
     coverUrl: img("photo-1483721310020-03333e577078"),
     description:
-      "A$AP Rocky grew up in East Harlem housing projects and named his collective after the neighborhood (A$AP = Always Strive And Prosper). He merged Southern trap production with New York lyricism and made Harlem internationally relevant again.",
+      "Also called Spanish Harlem, a historically Puerto Rican and Black neighborhood whose housing projects launched a collective named directly after it — A$AP, short for 'Always Strive And Prosper' — bringing Harlem fashion and grit back to the forefront of rap.",
     artists: [
       {
         id: "asap-rocky",
@@ -697,7 +726,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#7c3aed",
         initials: "AR",
-        bio: "Rakim Athelaston Mayers. Grew up in East Harlem projects. Merged Southern trap with New York grit and became one of the most fashion-forward artists in the game.",
+        imageUrl: wiki("commons/thumb/b/ba/A%24AP_Rocky_at_the_2025_Cannes_Film_Festival_%28cropped_3x4%29.jpg/330px-A%24AP_Rocky_at_the_2025_Cannes_Film_Festival_%28cropped_3x4%29.jpg"),
+        bio: "Rakim Mayers merged Southern trap production with New York lyricism, becoming one of the most fashion-forward artists in the genre.",
         spotifyUrl: "https://open.spotify.com/artist/13ubrt8QOOCPljQ2FL1Kca",
         signatureTrack: "Peso",
       },
@@ -715,7 +745,7 @@ export const LOCATIONS: Location[] = [
     era: "1973 – present",
     coverUrl: img("photo-1605721911519-3dfeb3be25e7"),
     description:
-      "Hip-hop was invented here. At 1520 Sedgwick Avenue on August 11, 1973, DJ Kool Herc threw a back-to-school party and isolated the percussion break of a funk record — the birth of breakbeat DJing. Everything after that came from this building.",
+      "Hip-hop was invented here. At 1520 Sedgwick Avenue on August 11, 1973, DJ Kool Herc threw a back-to-school party and isolated the percussion break of a funk record on two turntables — the single moment everything that followed traces back to.",
     artists: [
       {
         id: "fat-joe",
@@ -723,7 +753,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#dc2626",
         initials: "FJ",
-        bio: "Joseph Antonio Cartagena. Terror Squad. Crack-era Bronx embodied. One of the longest-running careers in hip-hop from the same block.",
+        imageUrl: wiki("commons/thumb/1/1a/FatJoeApr2011.jpg/330px-FatJoeApr2011.jpg"),
+        bio: "Joseph Cartagena's Terror Squad crew embodied crack-era Bronx — one of the longest-running careers in rap from the same block.",
         spotifyUrl: "https://open.spotify.com/artist/1Oa0bMld0A7sROyFaRJfUP",
         signatureTrack: "All the Way Up",
       },
@@ -733,7 +764,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#ec4899",
         initials: "CB",
-        bio: "Belcalis Marlenis Almánzar. From Highbridge, The Bronx. First solo female rapper to win the Grammy for Best Rap Album, 25 years after Lauryn Hill's 1998 win.",
+        imageUrl: wiki("commons/thumb/3/36/Cardi_B_March_2024.png/330px-Cardi_B_March_2024.png"),
+        bio: "Belcalis Almánzar, from Highbridge, became the first solo female rapper to win the Grammy for Best Rap Album in 25 years.",
         spotifyUrl: "https://open.spotify.com/artist/4kYSro6naA4h99UJvo89HB",
         signatureTrack: "Bodak Yellow",
       },
@@ -751,7 +783,7 @@ export const LOCATIONS: Location[] = [
     era: "1985 – present",
     coverUrl: img("photo-1542204165-65bf26472b9b"),
     description:
-      "Oakland's East Side produced hyphy music and the Bay Area's distinct sound. Too Short was rapping here before gangsta rap had a name. E-40 invented much of the slang that hip-hop still uses today. Oakland has one of the most underrated legacies in the genre.",
+      "Oakland's largest and most industrial district, long overshadowed by San Francisco across the bay. It quietly built one of the most underrated legacies in rap — the birthplace of hyphy music and a vocabulary that infiltrated hip-hop slang nationwide.",
     artists: [
       {
         id: "too-short",
@@ -759,7 +791,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#ca8a04",
         initials: "TS",
-        bio: "Todd Anthony Shaw. Started rapping in East Oakland at 14. One of the first independent artists to sell mixtapes out of a car trunk. Influenced every West Coast rapper that followed.",
+        imageUrl: wiki("commons/thumb/4/45/Too_Short_2023_%28cropped%292.jpg/330px-Too_Short_2023_%28cropped%292.jpg"),
+        bio: "Todd Shaw was one of the first independent artists to sell mixtapes out of a car trunk, influencing every West Coast rapper that followed.",
         spotifyUrl: "https://open.spotify.com/artist/0pkMMeMPRlzXf8e6BAnJ7I",
         signatureTrack: "Blow the Whistle",
       },
@@ -769,7 +802,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#16a34a",
         initials: "E40",
-        bio: "Earl Stevens. From Vallejo, Bay Area. Invented or popularized 'bruh', 'finna', 'salty', 'feel me', 'hella' — words that went mainstream decades before he got credit.",
+        imageUrl: wiki("commons/thumb/d/d2/E-40.jpg/330px-E-40.jpg"),
+        bio: "Earl Stevens popularized 'bruh,' 'finna,' 'salty,' and 'hella' — words that went mainstream decades before he got credit for them.",
         spotifyUrl: "https://open.spotify.com/artist/4mHro0kR0iXMD1FIiNKlNL",
         signatureTrack: "Tell Me When to Go",
       },
@@ -787,7 +821,7 @@ export const LOCATIONS: Location[] = [
     era: "1991 – 2006",
     coverUrl: img("photo-1546528377-79612d35c6c4"),
     description:
-      "OutKast — André 3000 and Big Boi — grew up in East Point and Stone Mountain, suburban Atlanta. At the 1995 Source Awards, they were booed by a New York crowd. Big Boi said 'The South got something to say.' They proved it across six albums that expanded what rap could be.",
+      "Suburban Atlanta in the shadow of a Confederate monument carved into a granite mountain. At the 1995 Source Awards, a duo from here was booed by a New York crowd — and responded by declaring 'The South got something to say,' a line that reshaped hip-hop's geography.",
     artists: [
       {
         id: "outkast",
@@ -795,7 +829,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#84cc16",
         initials: "OK",
-        bio: "André 3000 and Big Boi. The greatest Southern rap group of all time. 'Speakerboxxx/The Love Below' sold 5.7 million copies and won Album of the Year at the Grammys.",
+        imageUrl: wiki("commons/thumb/c/cb/2014227235242_2014-08-15_Rock%27n%27Heim_-_Sven_-_5D_MK_II_-_250_-_IMG_0063_mod.jpg/330px-2014227235242_2014-08-15_Rock%27n%27Heim_-_Sven_-_5D_MK_II_-_250_-_IMG_0063_mod.jpg"),
+        bio: "André 3000 and Big Boi's 'Speakerboxxx/The Love Below' sold 5.7 million copies and won Album of the Year at the Grammys.",
         spotifyUrl: "https://open.spotify.com/artist/1G9G7WWwZ9J5YO1XVEL5Ug",
         signatureTrack: "B.O.B.",
       },
@@ -813,7 +848,7 @@ export const LOCATIONS: Location[] = [
     era: "2008 – present",
     coverUrl: img("photo-1470225620780-dba8ba36b745"),
     description:
-      "Meek Mill grew up in North Philadelphia and has spent his career both escaping and returning to it — metaphorically and literally. His criminal justice advocacy after his own incarceration launched a national conversation about prison reform and bail conditions.",
+      "A historically working-class section of Philly hit hard by deindustrialization and over-policing — the same conditions that eventually fueled a national conversation about bail reform and criminal justice after one of its own went to prison.",
     artists: [
       {
         id: "meek-mill",
@@ -821,7 +856,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#f97316",
         initials: "MM",
-        bio: "Robert Rihmeek Williams. From North Philly. His incarceration sparked the REFORM Alliance, changing criminal justice policy for millions. On the streets by 12, in jail by 19, in the Oval Office by 35.",
+        imageUrl: wiki("commons/thumb/4/45/Meek.jpg/330px-Meek.jpg"),
+        bio: "Robert Williams' own incarceration sparked the REFORM Alliance, changing criminal justice policy for millions nationwide.",
         spotifyUrl: "https://open.spotify.com/artist/20sxb77xiYeusSH8cVdatc",
         signatureTrack: "Dreams and Nightmares",
       },
@@ -839,7 +875,7 @@ export const LOCATIONS: Location[] = [
     era: "1991 – present",
     coverUrl: img("photo-1514525253161-7a46d19cd819"),
     description:
-      "Memphis produced one of the darkest, most original rap sounds in history — slow, horrorcore beats with triple-time rapping. Three 6 Mafia invented a style in Orange Mound that influenced everything from trap music to modern drill. They also became the first rap group to win an Oscar.",
+      "One of the first neighborhoods in America built by and for Black residents after slavery, founded on a former plantation. Decades later it produced one of rap's darkest, most original sounds — slow horrorcore beats that became the DNA of modern trap.",
     artists: [
       {
         id: "three-6-mafia",
@@ -847,7 +883,8 @@ export const LOCATIONS: Location[] = [
         genre: "hip-hop",
         color: "#dc2626",
         initials: "36",
-        bio: "DJ Paul and Juicy J. Won the Academy Award for Best Original Song in 2006. Invented the hypnotic Memphis rap sound that became the DNA of modern trap.",
+        imageUrl: wiki("en/thumb/f/f2/Three_6_Mafia_full_group.jpg/330px-Three_6_Mafia_full_group.jpg"),
+        bio: "DJ Paul and Juicy J won the Academy Award for Best Original Song in 2006 — the first rap group ever to win an Oscar.",
         spotifyUrl: "https://open.spotify.com/artist/3j2P5djBKYWjy7LKMzMEuA",
         signatureTrack: "Stay Fly",
       },

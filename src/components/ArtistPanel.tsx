@@ -22,18 +22,31 @@ function ArtistCard({ artist }: { artist: Artist }) {
       {/* Avatar + name row */}
       <div className="flex items-center gap-3">
         <div
-          className="relative w-12 h-12 rounded-full flex items-center justify-center shrink-0 font-black text-sm"
+          className="relative w-12 h-12 rounded-full shrink-0"
           style={{
             background: `conic-gradient(from 180deg, ${artist.color}, ${artist.color}55, ${artist.color})`,
             padding: "2px",
           }}
         >
-          <div
-            className="w-full h-full rounded-full flex items-center justify-center"
-            style={{ background: "#0c0b0a", color: artist.color }}
-          >
-            {artist.initials}
-          </div>
+          {artist.imageUrl ? (
+            <div className="relative w-full h-full rounded-full overflow-hidden" style={{ background: "#0c0b0a" }}>
+              <Image
+                src={artist.imageUrl}
+                alt={artist.name}
+                fill
+                className="object-cover"
+                sizes="48px"
+                unoptimized
+              />
+            </div>
+          ) : (
+            <div
+              className="w-full h-full rounded-full flex items-center justify-center font-black text-sm"
+              style={{ background: "#0c0b0a", color: artist.color }}
+            >
+              {artist.initials}
+            </div>
+          )}
         </div>
         <div className="min-w-0">
           <p className="font-bold text-[0.95rem] text-white truncate leading-tight">{artist.name}</p>

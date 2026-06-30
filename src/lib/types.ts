@@ -6,6 +6,7 @@ export interface Artist {
   genre: Genre;
   color: string;         // accent color for this artist's card
   initials: string;      // fallback when no photo
+  imageUrl?: string;     // real photo — falls back to initials when absent
   bio: string;           // 1-2 sentences
   spotifyUrl: string;
   signatureTrack: string;
