@@ -16,7 +16,9 @@ type SearchResult =
 export default function SearchBar({ onSelect }: SearchBarProps) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const [highlighted, setHighlighted] = useState(0);
   const wrapRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   // Flat searchable index — built once
   const index = useMemo<SearchResult[]>(() => {
@@ -64,6 +66,26 @@ export default function SearchBar({ onSelect }: SearchBarProps) {
     setOpen(false);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!open || results.length === 0) {
+      if (e.key === "Escape") setOpen(false);
+      return;
+    }
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setHighlighted((i) => (i + 1) % results.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlighted((i) => (i - 1 + results.length) % results.length);
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      const pick = results[highlighted];
+      if (pick) handlePick(pick);
+    } else if (e.key === "Escape") {
+      setOpen(false);
+    }
+  };
+
   return (
     <div ref={wrapRef} className="relative w-full max-w-xs">
       <div
@@ -74,16 +96,27 @@ export default function SearchBar({ onSelect }: SearchBarProps) {
           backdropFilter: "blur(10px)",
         }}
       >
-        <Search className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--fg3)" }} />
+        <Search className="w-3.5 h-3.5 shrink-0" aria-hidden="true" style={{ color: "var(--fg3)" }} />
         <input
           value={query}
-          onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
+          onChange={(e) => { setQuery(e.target.value); setOpen(true); setHighlighted(0); }}
           onFocus={() => setOpen(true)}
+          onKeyDown={handleKeyDown}
           placeholder="Search artist or place…"
+          aria-label="Search artist or place"
+          role="combobox"
+          aria-expanded={open && results.length > 0}
+          aria-controls="search-results-listbox"
+          aria-activedescendant={open && results.length > 0 ? `search-result-${highlighted}` : undefined}
+          autoComplete="off"
           className="bg-transparent outline-none text-xs w-full text-white placeholder:text-[var(--fg3)]"
         />
         {query && (
-          <button onClick={() => { setQuery(""); setOpen(false); }} className="shrink-0">
+          <button
+            onClick={() => { setQuery(""); setOpen(false); }}
+            aria-label="Clear search"
+            className="shrink-0"
+          >
             <X className="w-3 h-3" style={{ color: "var(--fg3)" }} />
           </button>
         )}
@@ -91,6 +124,9 @@ export default function SearchBar({ onSelect }: SearchBarProps) {
 
       {open && query && (
         <div
+          ref={listRef}
+          id="search-results-listbox"
+          role="listbox"
           className="absolute top-[calc(100%+8px)] left-0 right-0 max-h-80 overflow-y-auto rounded-lg z-30"
           style={{ background: "rgba(13,12,11,0.96)", border: "1px solid rgba(255,255,255,0.1)", backdropFilter: "blur(20px)" }}
         >
@@ -99,12 +135,20 @@ export default function SearchBar({ onSelect }: SearchBarProps) {
           ) : (
             results.map((r, i) => {
               const color = GENRE_COLORS[r.loc.genre] ?? "#ef4444";
+              const isHighlighted = i === highlighted;
               return (
                 <button
                   key={`${r.type}-${r.type === "artist" ? r.artist.id : r.loc.id}-${i}`}
+                  id={`search-result-${i}`}
+                  role="option"
+                  aria-selected={isHighlighted}
                   onClick={() => handlePick(r)}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-white/5"
-                  style={{ borderBottom: i < results.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}
+                  onMouseEnter={() => setHighlighted(i)}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors"
+                  style={{
+                    borderBottom: i < results.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
+                    background: isHighlighted ? "rgba(255,255,255,0.06)" : "transparent",
+                  }}
                 >
                   <div
                     className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"

@@ -147,6 +147,9 @@ export default function ArtistPanel({ location, onClose }: ArtistPanelProps) {
 
       {/* Panel — frosted glass */}
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={location.name}
         className="panel-enter fixed bottom-0 inset-x-0 z-40 max-h-[80dvh] flex flex-col rounded-t-xl overflow-hidden"
         style={{
           background: "rgba(13,12,11,0.82)",
@@ -178,6 +181,7 @@ export default function ArtistPanel({ location, onClose }: ArtistPanelProps) {
           {/* Close button */}
           <button
             onClick={onClose}
+            aria-label="Close"
             className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-black/40"
             style={{ background: "rgba(0,0,0,0.4)", color: "white", backdropFilter: "blur(6px)" }}
           >

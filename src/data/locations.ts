@@ -122,7 +122,7 @@ export const LOCATIONS: Location[] = [
     lng: -118.2201,
     genre: "hip-hop",
     era: "1988 – present",
-    coverUrl: img("photo-1480714378408-67cf0d13bc1f"),
+    coverUrl: img("photo-1444723121867-7a241cacace9"),
     description:
       "A working-class city of 97,000 south of downtown LA that became the epicenter of West Coast rap. NWA's 'Straight Outta Compton' (1988) introduced reality rap to mainstream America, putting a single zip code on the map for three decades running.",
     artists: [
@@ -357,7 +357,7 @@ export const LOCATIONS: Location[] = [
     lng: -0.0680,
     genre: "grime",
     era: "2002 – present",
-    coverUrl: img("photo-1546528377-79612d35c6c4"),
+    coverUrl: img("photo-1449824913935-59a10b8d2000"),
     description:
       "Grime itself was forged here — pirate radio aerials on tower-block roofs, MCs trading bars over jungle breaks in council estate stairwells. The genre's entire DNA, from its slang to its sub-bass, traces back to a handful of North London postcodes.",
     artists: [
@@ -525,7 +525,7 @@ export const LOCATIONS: Location[] = [
     lng: -75.6298,
     genre: "latin",
     era: "2010 – present",
-    coverUrl: img("photo-1480714378408-67cf0d13bc1f"),
+    coverUrl: img("photo-1533106497176-45ae19e68ba2"),
     description:
       "Once ranked among the most dangerous neighborhoods on earth during Colombia's cartel era, Comuna 13 has since reinvented itself through street art, hip-hop, and outdoor escalators — a hillside slum turned symbol of the city's transformation.",
     artists: [
@@ -853,7 +853,7 @@ export const LOCATIONS: Location[] = [
     lng: -84.1699,
     genre: "hip-hop",
     era: "1991 – 2006",
-    coverUrl: img("photo-1546528377-79612d35c6c4"),
+    coverUrl: img("photo-1519501025264-65ba15a82390"),
     description:
       "Suburban Atlanta in the shadow of a Confederate monument carved into a granite mountain. At the 1995 Source Awards, a duo from here was booed by a New York crowd — and responded by declaring 'The South got something to say,' a line that reshaped hip-hop's geography.",
     artists: [
@@ -936,7 +936,7 @@ export const GENRE_COLORS: Record<string, string> = {
   "jazz":     "#f59e0b",
   "blues":    "#3b82f6",
   "country":  "#a78bfa",
-  "afrobeats":"#16a34a",
+  "afrobeats":"#f97316",
   "latin":    "#eab308",
 };
 

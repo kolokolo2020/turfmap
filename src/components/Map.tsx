@@ -3,11 +3,12 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { Shuffle, Share2, Check } from "lucide-react";
+import { Shuffle, Share2, Check, List } from "lucide-react";
 import { LOCATIONS, GENRE_COLORS } from "@/data/locations";
 import { Location } from "@/lib/types";
 import ArtistPanel from "./ArtistPanel";
 import SearchBar from "./SearchBar";
+import LocationList from "./LocationList";
 
 // Get your free token at mapbox.com → account → tokens
 const TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? "";
@@ -29,6 +30,7 @@ export default function Map({ activeGenre }: MapProps) {
   const [selected, setSelected] = useState<Location | null>(null);
   const [mapReady, setMapReady] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [listOpen, setListOpen] = useState(false);
 
   const handleSelect = useCallback((loc: Location, fly = true) => {
     setSelected(loc);
@@ -217,12 +219,14 @@ export default function Map({ activeGenre }: MapProps) {
       markersRef.current.push({ marker, el, genre: loc.genre });
     });
 
-    // Deep link: open a location directly if ?loc=<id> is present
+    // Deep link: open a location directly if ?loc=<id> is present.
+    // Deferred to a microtask — markers must finish mounting first, and this
+    // keeps the setState call out of the effect body itself.
     const params = new URLSearchParams(window.location.search);
     const requested = params.get("loc");
     if (requested) {
       const found = LOCATIONS.find((l) => l.id === requested);
-      if (found) handleSelect(found);
+      if (found) queueMicrotask(() => handleSelect(found));
     }
   }, [mapReady, handleSelect]);
 
@@ -261,8 +265,19 @@ export default function Map({ activeGenre }: MapProps) {
 
       {/* Search */}
       {TOKEN && (
-        <div className="absolute top-[68px] left-4 z-20">
-          <SearchBar onSelect={handleSelect} />
+        <div className="absolute top-[112px] md:top-[68px] left-4 right-4 md:right-auto z-20 flex items-center gap-2">
+          <div className="flex-1 min-w-0 md:w-72">
+            <SearchBar onSelect={handleSelect} />
+          </div>
+          <button
+            onClick={() => setListOpen(true)}
+            title="Browse all locations"
+            aria-label="Browse all locations as a list"
+            className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full transition-all hover:scale-105"
+            style={{ background: "rgba(20,20,20,0.7)", border: "1px solid rgba(255,255,255,0.08)", color: "var(--fg2)", backdropFilter: "blur(10px)" }}
+          >
+            <List className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
 
@@ -273,6 +288,7 @@ export default function Map({ activeGenre }: MapProps) {
             <button
               onClick={handleShare}
               title="Copy link to this location"
+              aria-label={copied ? "Link copied" : "Copy link to this location"}
               className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-105"
               style={{ background: "rgba(12,11,10,0.92)", border: "1px solid rgba(255,255,255,0.12)", color: copied ? "#4ade80" : "#fff" }}
             >
@@ -282,6 +298,7 @@ export default function Map({ activeGenre }: MapProps) {
           <button
             onClick={handleShuffle}
             title="Jump to a random location"
+            aria-label="Jump to a random location"
             className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-105"
             style={{ background: "#ef4444", color: "#fff", boxShadow: "0 2px 12px rgba(239,68,68,0.45)" }}
           >
@@ -291,6 +308,13 @@ export default function Map({ activeGenre }: MapProps) {
       )}
 
       <ArtistPanel location={selected} onClose={handleClose} />
+
+      <LocationList
+        open={listOpen}
+        locations={activeGenre === "all" ? LOCATIONS : LOCATIONS.filter((l) => l.genre === activeGenre)}
+        onSelect={handleSelect}
+        onClose={() => setListOpen(false)}
+      />
     </div>
   );
 }
