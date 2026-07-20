@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Image from "next/image";
 import { X, MapPin } from "lucide-react";
 import { GENRE_COLORS, GENRE_LABELS } from "@/data/locations";
@@ -13,6 +14,15 @@ interface LocationListProps {
 }
 
 export default function LocationList({ open, locations, onSelect, onClose }: LocationListProps) {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
   if (!open) return null;
 
   return (

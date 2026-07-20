@@ -13,24 +13,91 @@ import LocationList from "./LocationList";
 // Get your free token at mapbox.com → account → tokens
 const TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? "";
 
+const SOURCE_ID = "turf-locations";
+const PIN_LAYER = "turf-pins";
+const GLOW_LAYER = "turf-glow";
+
+// Pins are GL circle layers, not DOM markers. DOM markers are positioned by
+// writing to el.style.transform — which fought our own hover/filter scale()
+// transforms and CSS transitions, so pins lagged the map and could end up
+// hundreds of pixels from their coordinates. Circle layers render in the same
+// WebGL pass as the basemap, so they can never desync from it.
+
+// ["zoom"] is only legal as the input of a TOP-LEVEL interpolate/step, so the
+// hover/selected multiplier lives inside each stop's output, not around it.
+const stateMultiplier = [
+  "case",
+  ["boolean", ["feature-state", "selected"], false], 1.45,
+  ["boolean", ["feature-state", "hover"], false], 1.3,
+  1,
+];
+
+const pinRadius = [
+  "interpolate", ["linear"], ["zoom"],
+  1.5, ["*", 5, stateMultiplier],
+  6, ["*", 7.5, stateMultiplier],
+  12, ["*", 10, stateMultiplier],
+] as mapboxgl.ExpressionSpecification;
+
+const glowRadius = [
+  "interpolate", ["linear"], ["zoom"],
+  1.5, 12,
+  6, 18,
+  12, 24,
+] as mapboxgl.ExpressionSpecification;
+
+const locationsGeoJSON: GeoJSON.FeatureCollection<GeoJSON.Point> = {
+  type: "FeatureCollection",
+  features: LOCATIONS.map((loc) => ({
+    type: "Feature",
+    properties: {
+      id: loc.id,
+      name: loc.name,
+      city: loc.city,
+      genre: loc.genre,
+      color: GENRE_COLORS[loc.genre] ?? "#ef4444",
+    },
+    geometry: { type: "Point", coordinates: [loc.lng, loc.lat] },
+  })),
+};
+
 interface MapProps {
   activeGenre: string;
-}
-
-interface MarkerEntry {
-  marker: mapboxgl.Marker;
-  el: HTMLDivElement;
-  genre: string;
 }
 
 export default function Map({ activeGenre }: MapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<MarkerEntry[]>([]);
+  const tooltipRef = useRef<HTMLDivElement>(null);
+  const tooltipNameRef = useRef<HTMLDivElement>(null);
+  const tooltipCityRef = useRef<HTMLDivElement>(null);
+  const hoverIdRef = useRef<string | null>(null);
+  const activeGenreRef = useRef(activeGenre);
+  const selectedRef = useRef<Location | null>(null);
   const [selected, setSelected] = useState<Location | null>(null);
   const [mapReady, setMapReady] = useState(false);
   const [copied, setCopied] = useState(false);
   const [listOpen, setListOpen] = useState(false);
+
+  useEffect(() => {
+    activeGenreRef.current = activeGenre;
+  }, [activeGenre]);
+
+  useEffect(() => {
+    selectedRef.current = selected;
+  }, [selected]);
+
+  const hideTooltip = useCallback(() => {
+    if (tooltipRef.current) tooltipRef.current.style.opacity = "0";
+  }, []);
+
+  const clearHover = useCallback(() => {
+    const map = mapRef.current;
+    if (map && hoverIdRef.current !== null && map.getSource(SOURCE_ID)) {
+      map.setFeatureState({ source: SOURCE_ID, id: hoverIdRef.current }, { hover: false });
+    }
+    hoverIdRef.current = null;
+  }, []);
 
   const handleSelect = useCallback((loc: Location, fly = true) => {
     setSelected(loc);
@@ -58,8 +125,11 @@ export default function Map({ activeGenre }: MapProps) {
   }, []);
 
   const handleShuffle = useCallback(() => {
-    const pool =
+    let pool =
       activeGenre === "all" ? LOCATIONS : LOCATIONS.filter((l) => l.genre === activeGenre);
+    if (pool.length > 1 && selectedRef.current) {
+      pool = pool.filter((l) => l.id !== selectedRef.current!.id);
+    }
     if (!pool.length) return;
     const pick = pool[Math.floor(Math.random() * pool.length)];
     handleSelect(pick);
@@ -72,14 +142,16 @@ export default function Map({ activeGenre }: MapProps) {
     });
   }, []);
 
-  // Close on Escape
+  // Close the panel on Escape — only while it's open, so a stray Escape
+  // doesn't reset the map pitch for no reason.
   useEffect(() => {
+    if (!selected) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") handleClose();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [handleClose]);
+  }, [selected, handleClose]);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -95,19 +167,111 @@ export default function Map({ activeGenre }: MapProps) {
       zoom: 2.2,
       minZoom: 1.5,
       maxZoom: 18,
-      // Flat Mercator, not globe — HTML markers track screen position reliably
-      // at every zoom level.
+      // Flat Mercator, not globe — circle layers project 1:1 with the basemap.
       projection: { name: "mercator" } as mapboxgl.Projection,
-      // A single copy of the world. With world copies on (the default), at low
-      // zoom Mapbox renders the map several times side by side, and an HTML
-      // marker only "belongs" to one copy — so it can appear to float over a
-      // *different* repeated copy of the ocean than the one you're looking at.
-      // That's the "dots aren't on the real locations when zoomed out" bug.
-      renderWorldCopies: false,
       attributionControl: false,
     });
 
-    map.on("load", () => setMapReady(true));
+    map.addControl(new mapboxgl.AttributionControl({ compact: true }), "bottom-left");
+
+    map.on("load", () => {
+      map.addSource(SOURCE_ID, {
+        type: "geojson",
+        data: locationsGeoJSON,
+        promoteId: "id",
+      });
+
+      // Soft halo under each pin — static, no animation cost.
+      map.addLayer({
+        id: GLOW_LAYER,
+        type: "circle",
+        source: SOURCE_ID,
+        paint: {
+          "circle-radius": glowRadius,
+          "circle-color": ["get", "color"],
+          "circle-blur": 1,
+          "circle-opacity": 0.4,
+        },
+      });
+
+      map.addLayer({
+        id: PIN_LAYER,
+        type: "circle",
+        source: SOURCE_ID,
+        paint: {
+          "circle-radius": pinRadius,
+          "circle-color": ["get", "color"],
+          "circle-stroke-color": "#ffffff",
+          "circle-stroke-width": 2,
+        },
+      });
+
+      map.on("mousemove", PIN_LAYER, (e) => {
+        const f = e.features?.[0];
+        if (!f) return;
+        const props = f.properties as { id: string; name: string; city: string; genre: string; color: string };
+        const genre = activeGenreRef.current;
+        if (genre !== "all" && props.genre !== genre) {
+          // Dimmed-out pin — behave as if it isn't there.
+          map.getCanvas().style.cursor = "";
+          clearHover();
+          hideTooltip();
+          return;
+        }
+        map.getCanvas().style.cursor = "pointer";
+        if (hoverIdRef.current !== props.id) {
+          clearHover();
+          hoverIdRef.current = props.id;
+          map.setFeatureState({ source: SOURCE_ID, id: props.id }, { hover: true });
+        }
+        const tip = tooltipRef.current;
+        if (tip && tooltipNameRef.current && tooltipCityRef.current) {
+          tooltipNameRef.current.textContent = props.name;
+          tooltipCityRef.current.textContent = props.city;
+          tooltipCityRef.current.style.color = props.color;
+          tip.style.left = `${e.point.x}px`;
+          tip.style.top = `${e.point.y}px`;
+          tip.style.opacity = "1";
+        }
+      });
+
+      map.on("mouseleave", PIN_LAYER, () => {
+        map.getCanvas().style.cursor = "";
+        clearHover();
+        hideTooltip();
+      });
+
+      map.on("click", (e) => {
+        // Small bbox so pins are easy to hit on touch screens.
+        const pad = 6;
+        const features = map
+          .queryRenderedFeatures(
+            [
+              [e.point.x - pad, e.point.y - pad],
+              [e.point.x + pad, e.point.y + pad],
+            ],
+            { layers: [PIN_LAYER] }
+          )
+          .filter(
+            (f) =>
+              activeGenreRef.current === "all" ||
+              (f.properties as { genre: string }).genre === activeGenreRef.current
+          );
+        const hit = features[0];
+        if (hit) {
+          const loc = LOCATIONS.find((l) => l.id === (hit.properties as { id: string }).id);
+          if (loc) {
+            hideTooltip();
+            handleSelect(loc);
+          }
+        } else if (selectedRef.current) {
+          // Clicking empty map dismisses the open panel (desktop has no backdrop).
+          handleClose();
+        }
+      });
+
+      setMapReady(true);
+    });
 
     mapRef.current = map;
 
@@ -118,110 +282,14 @@ export default function Map({ activeGenre }: MapProps) {
 
     return () => {
       ro.disconnect();
-      markersRef.current.forEach((m) => m.marker.remove());
-      markersRef.current = [];
       map.remove();
       mapRef.current = null;
     };
-  }, []);
+  }, [handleSelect, handleClose, clearHover, hideTooltip]);
 
-  // Build markers once the map is ready
+  // Deep link: open a location directly if ?loc=<id> is present.
   useEffect(() => {
-    if (!mapReady || !mapRef.current) return;
-
-    LOCATIONS.forEach((loc) => {
-      const color = GENRE_COLORS[loc.genre] ?? "#ef4444";
-
-      const el = document.createElement("div");
-      el.className = "turf-marker";
-      el.style.cssText = `
-        position: relative;
-        width: 18px;
-        height: 18px;
-        cursor: pointer;
-        transition: opacity 0.25s ease, transform 0.25s ease;
-      `;
-
-      // Crisp solid pin: colored fill, white ring, small drop shadow.
-      // (No soft blurred halo — at low zoom a blurred radial-gradient
-      // compresses down into a fuzzy, illegible blob, which read as "weird".)
-      const core = document.createElement("div");
-      core.style.cssText = `
-        position: absolute;
-        inset: 0;
-        border-radius: 50%;
-        background: ${color};
-        border: 2.5px solid #fff;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.5);
-        transition: transform 0.15s cubic-bezier(0.34,1.56,0.64,1);
-      `;
-
-      // Small, subtle pulse — a thin ring, not a glowing blob.
-      const ring = document.createElement("div");
-      ring.className = "marker-ping";
-      ring.style.cssText = `
-        position: absolute;
-        inset: -4px;
-        border-radius: 50%;
-        border: 1.5px solid ${color};
-        opacity: 0.55;
-      `;
-
-      // Hover tooltip
-      const tooltip = document.createElement("div");
-      tooltip.style.cssText = `
-        position: absolute;
-        bottom: calc(100% + 10px);
-        left: 50%;
-        transform: translateX(-50%) translateY(4px);
-        white-space: nowrap;
-        background: rgba(10,10,10,0.95);
-        border: 1px solid rgba(255,255,255,0.12);
-        border-radius: 3px;
-        padding: 6px 10px;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.18s ease, transform 0.18s ease;
-        z-index: 10;
-      `;
-      const tName = document.createElement("div");
-      tName.textContent = loc.name;
-      tName.style.cssText = `font-size: 11px; font-weight: 700; color: #fff; letter-spacing: -0.01em;`;
-      const tCity = document.createElement("div");
-      tCity.textContent = loc.city;
-      tCity.style.cssText = `font-size: 9px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: ${color}; margin-top: 1px;`;
-      tooltip.appendChild(tName);
-      tooltip.appendChild(tCity);
-
-      el.appendChild(ring);
-      el.appendChild(core);
-      el.appendChild(tooltip);
-
-      el.addEventListener("mouseenter", () => {
-        core.style.transform = "scale(1.4)";
-        tooltip.style.opacity = "1";
-        tooltip.style.transform = "translateX(-50%) translateY(0)";
-      });
-      el.addEventListener("mouseleave", () => {
-        core.style.transform = "scale(1)";
-        tooltip.style.opacity = "0";
-        tooltip.style.transform = "translateX(-50%) translateY(4px)";
-      });
-      el.addEventListener("click", (e) => {
-        e.stopPropagation();
-        handleSelect(loc);
-      });
-
-      const marker = new mapboxgl.Marker({ element: el, anchor: "center" })
-        .setLngLat([loc.lng, loc.lat])
-        .addTo(mapRef.current!);
-
-      markersRef.current.push({ marker, el, genre: loc.genre });
-    });
-
-    // Deep link: open a location directly if ?loc=<id> is present.
-    // Deferred to a microtask — markers must finish mounting first, and this
-    // keeps the setState call out of the effect body itself.
+    if (!mapReady) return;
     const params = new URLSearchParams(window.location.search);
     const requested = params.get("loc");
     if (requested) {
@@ -230,19 +298,65 @@ export default function Map({ activeGenre }: MapProps) {
     }
   }, [mapReady, handleSelect]);
 
-  // Filter markers by active genre (visual fade, not full re-mount)
+  // Fade pins that don't match the active genre.
   useEffect(() => {
-    markersRef.current.forEach(({ el, genre }) => {
-      const visible = activeGenre === "all" || genre === activeGenre;
-      el.style.opacity = visible ? "1" : "0.08";
-      el.style.transform = visible ? "scale(1)" : "scale(0.7)";
-      el.style.pointerEvents = visible ? "auto" : "none";
-    });
-  }, [activeGenre]);
+    const map = mapRef.current;
+    if (!map || !mapReady || !map.getLayer(PIN_LAYER)) return;
+    const match: mapboxgl.ExpressionSpecification | null =
+      activeGenre === "all" ? null : ["==", ["get", "genre"], activeGenre];
+    map.setPaintProperty(PIN_LAYER, "circle-opacity", match ? ["case", match, 1, 0.12] : 1);
+    map.setPaintProperty(PIN_LAYER, "circle-stroke-opacity", match ? ["case", match, 1, 0.12] : 1);
+    map.setPaintProperty(GLOW_LAYER, "circle-opacity", match ? ["case", match, 0.4, 0.04] : 0.4);
+  }, [activeGenre, mapReady]);
+
+  // Highlight the selected pin.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady || !selected || !map.getSource(SOURCE_ID)) return;
+    const id = selected.id;
+    map.setFeatureState({ source: SOURCE_ID, id }, { selected: true });
+    return () => {
+      if (mapRef.current?.getSource(SOURCE_ID)) {
+        mapRef.current.setFeatureState({ source: SOURCE_ID, id }, { selected: false });
+      }
+    };
+  }, [selected, mapReady]);
 
   return (
     <div className="relative w-full h-full">
       <div ref={containerRef} className="w-full h-full" />
+
+      {/* Hover tooltip — one element for all pins, positioned from the mouse event. */}
+      <div
+        ref={tooltipRef}
+        aria-hidden="true"
+        className="absolute z-10 pointer-events-none"
+        style={{
+          opacity: 0,
+          transform: "translate(-50%, calc(-100% - 14px))",
+          whiteSpace: "nowrap",
+          background: "rgba(10,10,10,0.95)",
+          border: "1px solid rgba(255,255,255,0.12)",
+          borderRadius: 4,
+          padding: "6px 10px",
+          transition: "opacity 0.15s ease",
+        }}
+      >
+        <div
+          ref={tooltipNameRef}
+          style={{ fontSize: 11, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}
+        />
+        <div
+          ref={tooltipCityRef}
+          style={{
+            fontSize: 9,
+            fontWeight: 600,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            marginTop: 1,
+          }}
+        />
+      </div>
 
       {!TOKEN && (
         <div

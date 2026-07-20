@@ -14,7 +14,9 @@
   --color-foreground: var(--fg);
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* No global star-selector margin/padding reset here: un-layered rules beat
+   Tailwind's @layer utilities, so it would disable every padding and margin
+   utility class. Tailwind v4 preflight already resets those. */
 
 body {
   background: var(--bg);
@@ -23,22 +25,16 @@ body {
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
   height: 100dvh;
-  width: 100vw;
+  width: 100%;
 }
 
 /* Mapbox overrides */
-.mapboxgl-ctrl-logo,
-.mapboxgl-ctrl-attrib { display: none !important; }
 .mapboxgl-canvas { outline: none; }
 
-/* Custom marker pulse */
+/* Loader pulse */
 @keyframes ping {
   0% { transform: scale(1); opacity: 0.8; }
   100% { transform: scale(2.5); opacity: 0; }
-}
-
-.marker-ping {
-  animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
 /* Panel slide up */
@@ -49,8 +45,13 @@ body {
 
 .panel-enter { animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
+@media (prefers-reduced-motion: reduce) {
+  .panel-enter { animation: none; }
+  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}
+
 /* Scrollbar */
-::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar { width: 3px; height: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--fg3); border-radius: 2px; }
 

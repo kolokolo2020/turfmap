@@ -137,25 +137,26 @@ export default function ArtistPanel({ location, onClose }: ArtistPanelProps) {
 
   return (
     <>
-      {/* Backdrop — fully blurred so nothing behind it (map labels, etc.)
-          is ever legible, regardless of how tall the panel ends up being. */}
+      {/* Backdrop — mobile only. On desktop the panel floats over the map,
+          and clicking the map (or Escape) dismisses it. */}
       <div
-        className="fixed inset-0 z-30"
+        className="fixed inset-0 z-30 md:hidden"
         style={{ background: "rgba(5,5,8,0.4)", backdropFilter: "blur(10px)" }}
         onClick={onClose}
       />
 
-      {/* Panel — frosted glass */}
+      {/* Panel — frosted glass. Bottom sheet on mobile, floating card on desktop
+          so the map stays visible around it. */}
       <div
         role="dialog"
         aria-modal="true"
         aria-label={location.name}
-        className="panel-enter fixed bottom-0 inset-x-0 z-40 max-h-[80dvh] flex flex-col rounded-t-xl overflow-hidden"
+        className="panel-enter fixed bottom-0 inset-x-0 z-40 max-h-[80dvh] flex flex-col rounded-t-xl overflow-hidden md:bottom-5 md:left-5 md:right-auto md:w-[640px] md:max-w-[calc(100vw-2.5rem)] md:max-h-[72dvh] md:rounded-xl"
         style={{
           background: "rgba(13,12,11,0.82)",
           backdropFilter: "blur(28px) saturate(150%)",
           border: "1px solid rgba(255,255,255,0.1)",
-          borderBottom: "none",
+          boxShadow: "0 12px 40px rgba(0,0,0,0.45)",
         }}
       >
         {/* Cover photo header */}
@@ -173,8 +174,8 @@ export default function ArtistPanel({ location, onClose }: ArtistPanelProps) {
             style={{ background: "linear-gradient(to top, rgba(13,12,11,0.95) 0%, rgba(13,12,11,0.5) 55%, rgba(13,12,11,0.1) 100%)" }}
           />
 
-          {/* Drag handle */}
-          <div className="absolute top-3 inset-x-0 flex justify-center">
+          {/* Drag handle — bottom-sheet affordance, mobile only */}
+          <div className="absolute top-3 inset-x-0 flex justify-center md:hidden">
             <div className="w-9 h-1 rounded-full" style={{ background: "rgba(255,255,255,0.4)" }} />
           </div>
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { X } from "lucide-react";
 import { GENRE_COLORS, GENRE_LABELS, LOCATIONS } from "@/data/locations";
 
@@ -9,6 +10,15 @@ interface AboutModalProps {
 }
 
 export default function AboutModal({ open, onClose }: AboutModalProps) {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
   if (!open) return null;
 
   const genreKeys = Object.keys(GENRE_LABELS).filter((g) =>
