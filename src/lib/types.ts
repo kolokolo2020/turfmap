@@ -7,7 +7,12 @@ export type Genre =
   | "country"
   | "afrobeats"
   | "latin"
-  | "music-videos";
+  | "music-videos"
+  | "k-pop"
+  | "edm"
+  | "rock"
+  | "soul"
+  | "reggaeton";
 
 export interface Artist {
   id: string;
