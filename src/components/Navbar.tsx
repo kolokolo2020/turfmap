@@ -1,15 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { Info } from "lucide-react";
+import { Info, Sun, Moon } from "lucide-react";
 import { GENRE_COLORS, GENRE_LABELS, LOCATIONS } from "@/data/locations";
+import type { Theme } from "@/hooks/useTheme";
 import AboutModal from "./AboutModal";
 
-const GENRES = ["all", "hip-hop", "grime", "reggae", "afrobeats", "latin", "jazz", "blues"];
+const GENRES = ["all", "hip-hop", "grime", "reggae", "afrobeats", "latin", "jazz", "blues", "country", "music-videos"];
 
 interface NavbarProps {
   activeGenre: string;
   onGenreChange: (genre: string) => void;
+  theme: Theme;
+  onThemeToggle: () => void;
 }
 
 interface GenreChipsProps {
@@ -22,11 +25,11 @@ function GenreChips({ activeGenre, onGenreChange, className = "" }: GenreChipsPr
   return (
     <div
       className={`flex items-center gap-1 px-1.5 py-1.5 rounded-full overflow-x-auto ${className}`}
-      style={{ background: "rgba(20,20,20,0.7)", border: "1px solid rgba(255,255,255,0.08)", backdropFilter: "blur(10px)" }}
+      style={{ background: "var(--chip-bg)", border: "1px solid var(--chip-border)", backdropFilter: "blur(10px)" }}
     >
       {GENRES.map((key) => {
         const isActive = activeGenre === key;
-        const color = key === "all" ? "#fff" : GENRE_COLORS[key];
+        const color = key === "all" ? "var(--chip-active-bg)" : GENRE_COLORS[key];
         const label = key === "all" ? "All" : GENRE_LABELS[key];
         return (
           <button
@@ -36,7 +39,7 @@ function GenreChips({ activeGenre, onGenreChange, className = "" }: GenreChipsPr
             className="label px-3 py-1.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5 shrink-0"
             style={
               isActive
-                ? { background: key === "all" ? "white" : color, color: key === "all" ? "#0a0a0a" : "#0a0a0a" }
+                ? { background: color, color: key === "all" ? "var(--chip-active-fg)" : "#0a0a0a" }
                 : { color: "var(--fg2)" }
             }
           >
@@ -54,7 +57,7 @@ function GenreChips({ activeGenre, onGenreChange, className = "" }: GenreChipsPr
   );
 }
 
-export default function Navbar({ activeGenre, onGenreChange }: NavbarProps) {
+export default function Navbar({ activeGenre, onGenreChange, theme, onThemeToggle }: NavbarProps) {
   const [aboutOpen, setAboutOpen] = useState(false);
   const visibleCount =
     activeGenre === "all"
@@ -64,7 +67,7 @@ export default function Navbar({ activeGenre, onGenreChange }: NavbarProps) {
   return (
     <header
       className="absolute top-0 inset-x-0 z-20 flex flex-col gap-2.5 px-5 pt-4 pb-2.5 md:h-16 md:flex-row md:items-center md:justify-between md:gap-4 md:py-0"
-      style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.85), transparent)" }}
+      style={{ background: "linear-gradient(to bottom, var(--header-scrim), transparent)" }}
     >
       <div className="flex items-center justify-between gap-4">
         {/* Wordmark */}
@@ -82,7 +85,7 @@ export default function Navbar({ activeGenre, onGenreChange }: NavbarProps) {
           <div className="leading-tight">
             <span
               className="font-black text-lg tracking-tighter select-none block"
-              style={{ color: "white", letterSpacing: "-0.04em" }}
+              style={{ color: "var(--fg)", letterSpacing: "-0.04em" }}
             >
               TURF
             </span>
@@ -93,17 +96,26 @@ export default function Navbar({ activeGenre, onGenreChange }: NavbarProps) {
           <button
             onClick={() => setAboutOpen(true)}
             aria-label="About TURF"
-            className="w-6 h-6 flex items-center justify-center rounded-full transition-colors hover:bg-white/10 shrink-0"
+            className="hover-surface w-6 h-6 flex items-center justify-center rounded-full transition-colors shrink-0"
             style={{ color: "var(--fg2)" }}
           >
             <Info className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={onThemeToggle}
+            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            className="hover-surface w-6 h-6 flex items-center justify-center rounded-full transition-colors shrink-0"
+            style={{ color: "var(--fg2)" }}
+          >
+            {theme === "dark" ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
           </button>
         </div>
 
         {/* Location count — desktop only here; shown inline on mobile's second row */}
         <div
           className="label hidden md:flex items-center gap-1.5 shrink-0 px-3 py-1.5 rounded-full"
-          style={{ background: "rgba(20,20,20,0.7)", border: "1px solid rgba(255,255,255,0.08)", color: "var(--fg2)" }}
+          style={{ background: "var(--chip-bg)", border: "1px solid var(--chip-border)", color: "var(--fg2)" }}
         >
           <span
             className="inline-block w-1.5 h-1.5 rounded-full"
@@ -124,7 +136,7 @@ export default function Navbar({ activeGenre, onGenreChange }: NavbarProps) {
         <GenreChips activeGenre={activeGenre} onGenreChange={onGenreChange} className="flex-1 min-w-0" />
         <div
           className="label flex items-center gap-1.5 shrink-0 px-2.5 py-1.5 rounded-full"
-          style={{ background: "rgba(20,20,20,0.7)", border: "1px solid rgba(255,255,255,0.08)", color: "var(--fg2)" }}
+          style={{ background: "var(--chip-bg)", border: "1px solid var(--chip-border)", color: "var(--fg2)" }}
         >
           <span
             className="inline-block w-1.5 h-1.5 rounded-full"

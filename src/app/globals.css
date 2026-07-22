@@ -1,12 +1,38 @@
 @import "tailwindcss";
 
-:root {
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
   --bg: #0a0a0a;
   --fg: #f0ede8;
   --fg2: #7a7570;
   --fg3: #3a3530;
   --border: rgba(255,255,255,0.07);
   --panel: rgba(12,11,10,0.97);
+  --panel-glass: rgba(13,12,11,0.82);
+  --chip-bg: rgba(20,20,20,0.7);
+  --chip-border: rgba(255,255,255,0.08);
+  --hover-surface: rgba(255,255,255,0.08);
+  --chip-active-bg: #ffffff;
+  --chip-active-fg: #0a0a0a;
+  --header-scrim: rgba(0,0,0,0.85);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f6f5f2;
+  --fg: #17150f;
+  --fg2: #6b6558;
+  --fg3: #b5afa3;
+  --border: rgba(0,0,0,0.08);
+  --panel: rgba(255,253,250,0.97);
+  --panel-glass: rgba(255,253,250,0.85);
+  --chip-bg: rgba(255,255,255,0.75);
+  --chip-border: rgba(0,0,0,0.08);
+  --hover-surface: rgba(0,0,0,0.05);
+  --chip-active-bg: #17150f;
+  --chip-active-fg: #ffffff;
+  --header-scrim: rgba(246,245,242,0.85);
 }
 
 @theme inline {
@@ -57,6 +83,10 @@ body {
 
 /* Track hover */
 .track-row:hover { background: rgba(255,255,255,0.04); }
+
+/* Theme-aware hover surface — replaces Tailwind's hover:bg-white/10, which
+   would be nearly invisible against a light-mode background. */
+.hover-surface:hover { background: var(--hover-surface); }
 
 /* Font utilities */
 .label {

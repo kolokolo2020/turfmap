@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { Location, Artist } from "@/lib/types";
 import { GENRE_LABELS } from "@/data/locations";
-import { X, MapPin, Calendar, Play, Disc3 } from "lucide-react";
+import { X, MapPin, Calendar, Play, Disc3, Camera, Video } from "lucide-react";
+import StreetView from "./StreetView";
 
 interface ArtistPanelProps {
   location: Location | null;
@@ -127,12 +129,45 @@ function ArtistCard({ artist }: { artist: Artist }) {
             <Play className="w-3 h-3 fill-black text-black ml-0.5" />
           </span>
         </a>
+
+        {/* Watch the video — only present on Music Videos pins */}
+        {artist.videoUrl && (
+          <a
+            href={artist.videoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center justify-between p-2.5 rounded-sm transition-colors"
+            style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(255,255,255,0.1)" }}
+          >
+            <div className="min-w-0 mr-2">
+              <p className="label mb-0.5" style={{ color: "rgba(255,255,255,0.45)" }}>Filmed Here</p>
+              <p className="text-xs font-semibold text-white truncate">{artist.videoTitle ?? "Watch the video"}</p>
+            </div>
+            <span
+              className="shrink-0 w-7 h-7 flex items-center justify-center rounded-full transition-transform group-hover:scale-110"
+              style={{ background: "#dc2626" }}
+            >
+              <Video className="w-3.5 h-3.5 text-white" />
+            </span>
+          </a>
+        )}
       </div>
     </div>
   );
 }
 
 export default function ArtistPanel({ location, onClose }: ArtistPanelProps) {
+  const [streetViewOpen, setStreetViewOpen] = useState(false);
+  const [lastLocationId, setLastLocationId] = useState(location?.id);
+
+  // Adjusting state during render (React's sanctioned pattern for this,
+  // rather than an effect) — a stale "open" flag would otherwise resurface
+  // Street View for the next location the moment it's selected.
+  if (location?.id !== lastLocationId) {
+    setLastLocationId(location?.id);
+    setStreetViewOpen(false);
+  }
+
   if (!location) return null;
 
   return (
@@ -153,9 +188,9 @@ export default function ArtistPanel({ location, onClose }: ArtistPanelProps) {
         aria-label={location.name}
         className="panel-enter fixed bottom-0 inset-x-0 z-40 max-h-[80dvh] flex flex-col rounded-t-xl overflow-hidden md:bottom-5 md:left-5 md:right-auto md:w-[640px] md:max-w-[calc(100vw-2.5rem)] md:max-h-[72dvh] md:rounded-xl"
         style={{
-          background: "rgba(13,12,11,0.82)",
+          background: "var(--panel-glass)",
           backdropFilter: "blur(28px) saturate(150%)",
-          border: "1px solid rgba(255,255,255,0.1)",
+          border: "1px solid var(--border)",
           boxShadow: "0 12px 40px rgba(0,0,0,0.45)",
         }}
       >
@@ -178,6 +213,17 @@ export default function ArtistPanel({ location, onClose }: ArtistPanelProps) {
           <div className="absolute top-3 inset-x-0 flex justify-center md:hidden">
             <div className="w-9 h-1 rounded-full" style={{ background: "rgba(255,255,255,0.4)" }} />
           </div>
+
+          {/* Street View */}
+          <button
+            onClick={() => setStreetViewOpen(true)}
+            title="See Street View"
+            aria-label="See Street View of this location"
+            className="absolute top-3 right-14 w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-black/40"
+            style={{ background: "rgba(0,0,0,0.4)", color: "white", backdropFilter: "blur(6px)" }}
+          >
+            <Camera className="w-4 h-4" />
+          </button>
 
           {/* Close button */}
           <button
@@ -220,13 +266,21 @@ export default function ArtistPanel({ location, onClose }: ArtistPanelProps) {
           </div>
 
           {/* Description */}
-          <div className="mx-5 my-5 pl-4" style={{ borderLeft: "2px solid rgba(255,255,255,0.15)" }}>
-            <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>
+          <div className="mx-5 my-5 pl-4" style={{ borderLeft: "2px solid var(--border)" }}>
+            <p className="text-sm leading-relaxed" style={{ color: "var(--fg2)" }}>
               {location.description}
             </p>
           </div>
         </div>
       </div>
+
+      <StreetView
+        open={streetViewOpen}
+        lat={location.lat}
+        lng={location.lng}
+        name={location.name}
+        onClose={() => setStreetViewOpen(false)}
+      />
     </>
   );
 }

@@ -1,4 +1,13 @@
-export type Genre = "hip-hop" | "grime" | "reggae" | "jazz" | "blues" | "country" | "afrobeats" | "latin";
+export type Genre =
+  | "hip-hop"
+  | "grime"
+  | "reggae"
+  | "jazz"
+  | "blues"
+  | "country"
+  | "afrobeats"
+  | "latin"
+  | "music-videos";
 
 export interface Artist {
   id: string;
@@ -11,6 +20,8 @@ export interface Artist {
   albums?: string[];     // most notable releases
   spotifyUrl: string;
   signatureTrack: string;
+  videoTitle?: string;   // the music video shot at this location, if any
+  videoUrl?: string;     // link to watch it
 }
 
 export interface Location {

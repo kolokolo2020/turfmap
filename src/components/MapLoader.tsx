@@ -1,13 +1,14 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import type { Theme } from "@/hooks/useTheme";
 
 const Map = dynamic(() => import("./Map"), {
   ssr: false,
   loading: () => (
     <div
       className="w-full h-full flex items-center justify-center"
-      style={{ background: "#0a0a0a" }}
+      style={{ background: "var(--bg)" }}
     >
       <div className="text-center">
         <div
@@ -20,7 +21,7 @@ const Map = dynamic(() => import("./Map"), {
         />
         <p
           className="text-xs font-bold tracking-widest uppercase"
-          style={{ color: "#3a3530" }}
+          style={{ color: "var(--fg3)" }}
         >
           Loading TURF
         </p>
@@ -31,8 +32,9 @@ const Map = dynamic(() => import("./Map"), {
 
 interface MapLoaderProps {
   activeGenre: string;
+  theme: Theme;
 }
 
-export default function MapLoader({ activeGenre }: MapLoaderProps) {
-  return <Map activeGenre={activeGenre} />;
+export default function MapLoader({ activeGenre, theme }: MapLoaderProps) {
+  return <Map activeGenre={activeGenre} theme={theme} />;
 }

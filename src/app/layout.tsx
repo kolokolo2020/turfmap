@@ -28,13 +28,22 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#0a0a0a",
-  colorScheme: "dark",
+  colorScheme: "dark light",
 };
+
+// Runs before paint so the correct theme applies immediately — without this,
+// React's own theme state (which can't read localStorage until after mount)
+// would render the wrong theme for one frame on every load.
+const themeInitScript = `(function(){try{var t=localStorage.getItem('turf-theme');if(t!=='dark'&&t!=='light'){t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="h-full">
+    // suppressHydrationWarning: the inline script below sets data-theme
+    // before React hydrates, on purpose, so server/client attributes will
+    // legitimately differ here — same technique libraries like next-themes use.
+    <html lang="en" className="h-full" suppressHydrationWarning>
       <body className={`${inter.className} h-full overflow-hidden`}>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         {children}
       </body>
     </html>

@@ -91,8 +91,8 @@ export default function SearchBar({ onSelect }: SearchBarProps) {
       <div
         className="flex items-center gap-2 px-3 py-1.5 rounded-full transition-all"
         style={{
-          background: "rgba(20,20,20,0.7)",
-          border: `1px solid ${open && results.length ? "rgba(239,68,68,0.4)" : "rgba(255,255,255,0.08)"}`,
+          background: "var(--chip-bg)",
+          border: `1px solid ${open && results.length ? "rgba(239,68,68,0.4)" : "var(--chip-border)"}`,
           backdropFilter: "blur(10px)",
         }}
       >
@@ -109,7 +109,7 @@ export default function SearchBar({ onSelect }: SearchBarProps) {
           aria-controls="search-results-listbox"
           aria-activedescendant={open && results.length > 0 ? `search-result-${highlighted}` : undefined}
           autoComplete="off"
-          className="bg-transparent outline-none text-xs w-full text-white placeholder:text-[var(--fg3)]"
+          className="bg-transparent outline-none text-xs w-full text-[var(--fg)] placeholder:text-[var(--fg3)]"
         />
         {query && (
           <button
@@ -128,7 +128,7 @@ export default function SearchBar({ onSelect }: SearchBarProps) {
           id="search-results-listbox"
           role="listbox"
           className="absolute top-[calc(100%+8px)] left-0 right-0 max-h-80 overflow-y-auto rounded-lg z-30"
-          style={{ background: "rgba(13,12,11,0.96)", border: "1px solid rgba(255,255,255,0.1)", backdropFilter: "blur(20px)" }}
+          style={{ background: "var(--panel)", border: "1px solid var(--border)", backdropFilter: "blur(20px)" }}
         >
           {results.length === 0 ? (
             <p className="text-xs px-4 py-3" style={{ color: "var(--fg3)" }}>No matches for &ldquo;{query}&rdquo;</p>
@@ -146,8 +146,8 @@ export default function SearchBar({ onSelect }: SearchBarProps) {
                   onMouseEnter={() => setHighlighted(i)}
                   className="w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors"
                   style={{
-                    borderBottom: i < results.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
-                    background: isHighlighted ? "rgba(255,255,255,0.06)" : "transparent",
+                    borderBottom: i < results.length - 1 ? "1px solid var(--border)" : "none",
+                    background: isHighlighted ? "var(--hover-surface)" : "transparent",
                   }}
                 >
                   <div
@@ -157,7 +157,7 @@ export default function SearchBar({ onSelect }: SearchBarProps) {
                     {r.type === "artist" ? <Mic2 className="w-3.5 h-3.5" /> : <MapPin className="w-3.5 h-3.5" />}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-white truncate">
+                    <p className="text-sm font-semibold text-[var(--fg)] truncate">
                       {r.type === "artist" ? r.artist.name : r.loc.name}
                     </p>
                     <p className="text-xs truncate" style={{ color: "var(--fg3)" }}>

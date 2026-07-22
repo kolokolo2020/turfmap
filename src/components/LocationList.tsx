@@ -38,17 +38,17 @@ export default function LocationList({ open, locations, onSelect, onClose }: Loc
         aria-label="All locations"
         className="panel-enter fixed inset-x-0 bottom-0 z-50 max-h-[85dvh] sm:max-h-[75dvh] sm:top-1/2 sm:bottom-auto sm:left-1/2 sm:right-auto sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-2xl flex flex-col rounded-t-xl sm:rounded-xl overflow-hidden"
         style={{
-          background: "rgba(13,12,11,0.92)",
+          background: "var(--panel)",
           backdropFilter: "blur(28px) saturate(150%)",
-          border: "1px solid rgba(255,255,255,0.1)",
+          border: "1px solid var(--border)",
         }}
       >
         <div
           className="flex items-center justify-between gap-3 px-5 py-4 shrink-0"
-          style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
+          style={{ borderBottom: "1px solid var(--border)" }}
         >
           <div>
-            <h2 className="font-black text-lg text-white tracking-tight leading-none">All Locations</h2>
+            <h2 className="font-black text-lg text-[var(--fg)] tracking-tight leading-none">All Locations</h2>
             <p className="label mt-1" style={{ color: "var(--fg2)" }}>
               {locations.length} location{locations.length !== 1 ? "s" : ""}
             </p>
@@ -56,7 +56,7 @@ export default function LocationList({ open, locations, onSelect, onClose }: Loc
           <button
             onClick={onClose}
             aria-label="Close"
-            className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-white/10"
+            className="hover-surface shrink-0 w-8 h-8 flex items-center justify-center rounded-full transition-colors"
             style={{ color: "var(--fg2)" }}
           >
             <X className="w-4 h-4" />
@@ -79,13 +79,13 @@ export default function LocationList({ open, locations, onSelect, onClose }: Loc
                       onSelect(loc);
                       onClose();
                     }}
-                    className="group flex items-center gap-3 p-2 rounded-lg text-left transition-colors hover:bg-white/5"
+                    className="hover-surface group flex items-center gap-3 p-2 rounded-lg text-left transition-colors"
                   >
                     <div className="relative w-14 h-14 rounded-md overflow-hidden shrink-0" style={{ background: "#0c0b0a" }}>
                       <Image src={loc.coverUrl} alt={loc.name} fill className="object-cover" sizes="56px" unoptimized />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-white truncate">{loc.name}</p>
+                      <p className="text-sm font-semibold text-[var(--fg)] truncate">{loc.name}</p>
                       <p className="text-xs truncate flex items-center gap-1" style={{ color: "var(--fg2)" }}>
                         <MapPin className="w-3 h-3 shrink-0" />
                         {loc.city}

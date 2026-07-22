@@ -3,12 +3,20 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { Shuffle, Share2, Check, List } from "lucide-react";
+import { Shuffle, Share2, Check, List, Locate } from "lucide-react";
 import { LOCATIONS, GENRE_COLORS } from "@/data/locations";
 import { Location } from "@/lib/types";
+import type { Theme } from "@/hooks/useTheme";
 import ArtistPanel from "./ArtistPanel";
 import SearchBar from "./SearchBar";
 import LocationList from "./LocationList";
+
+const MAP_STYLES: Record<Theme, string> = {
+  dark: "mapbox://styles/mapbox/dark-v11",
+  light: "mapbox://styles/mapbox/streets-v12",
+};
+
+const WORLD_VIEW = { center: [-40, 30] as [number, number], zoom: 2.2, pitch: 0, bearing: 0 };
 
 // Get your free token at mapbox.com → account → tokens
 const TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? "";
@@ -63,9 +71,10 @@ const locationsGeoJSON: GeoJSON.FeatureCollection<GeoJSON.Point> = {
 
 interface MapProps {
   activeGenre: string;
+  theme: Theme;
 }
 
-export default function Map({ activeGenre }: MapProps) {
+export default function Map({ activeGenre, theme }: MapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -74,8 +83,13 @@ export default function Map({ activeGenre }: MapProps) {
   const hoverIdRef = useRef<string | null>(null);
   const activeGenreRef = useRef(activeGenre);
   const selectedRef = useRef<Location | null>(null);
+  const isFirstThemeRun = useRef(true);
   const [selected, setSelected] = useState<Location | null>(null);
-  const [mapReady, setMapReady] = useState(false);
+  // Bumped every time the source + layers are (re)built — once on initial
+  // load, and again after every theme swap, since setStyle() wipes them.
+  // Effects that depend on the layers existing key off this instead of a
+  // plain "ready" boolean, so they re-fire on every rebuild, not just the first.
+  const [styleVersion, setStyleVersion] = useState(0);
   const [copied, setCopied] = useState(false);
   const [listOpen, setListOpen] = useState(false);
 
@@ -153,6 +167,11 @@ export default function Map({ activeGenre }: MapProps) {
     return () => window.removeEventListener("keydown", onKey);
   }, [selected, handleClose]);
 
+  const handleResetView = useCallback(() => {
+    handleClose();
+    mapRef.current?.flyTo({ ...WORLD_VIEW, duration: 1200, essential: true });
+  }, [handleClose]);
+
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
     if (!TOKEN) return;
@@ -161,10 +180,9 @@ export default function Map({ activeGenre }: MapProps) {
 
     const map = new mapboxgl.Map({
       container: containerRef.current,
-      // Real-world colors (green parks, blue water, beige roads) — like Google Maps.
-      style: "mapbox://styles/mapbox/streets-v12",
-      center: [-40, 30],
-      zoom: 2.2,
+      style: MAP_STYLES[theme],
+      center: WORLD_VIEW.center,
+      zoom: WORLD_VIEW.zoom,
       minZoom: 1.5,
       maxZoom: 18,
       // Flat Mercator, not globe — circle layers project 1:1 with the basemap.
@@ -174,7 +192,20 @@ export default function Map({ activeGenre }: MapProps) {
 
     map.addControl(new mapboxgl.AttributionControl({ compact: true }), "bottom-left");
 
-    map.on("load", () => {
+    // Delegated layer listeners (map.on(type, layerId, handler)) query the
+    // named layer as soon as they fire — registering them before the layer
+    // exists risks Mapbox throwing on the very first mousemove. So they're
+    // attached inside setupLayers instead, guarded to run only once: the
+    // listener itself keeps working across later setStyle() calls as long as
+    // a layer with the same id gets re-added, which setupLayers also does.
+    let listenersAttached = false;
+
+    // Re-adds the source + layers whenever the style (re)loads — which
+    // happens once on first load, and again after every theme swap, since
+    // setStyle() throws away all custom sources and layers.
+    const setupLayers = () => {
+      if (map.getSource(SOURCE_ID)) return;
+
       map.addSource(SOURCE_ID, {
         type: "geojson",
         data: locationsGeoJSON,
@@ -206,72 +237,79 @@ export default function Map({ activeGenre }: MapProps) {
         },
       });
 
-      map.on("mousemove", PIN_LAYER, (e) => {
-        const f = e.features?.[0];
-        if (!f) return;
-        const props = f.properties as { id: string; name: string; city: string; genre: string; color: string };
-        const genre = activeGenreRef.current;
-        if (genre !== "all" && props.genre !== genre) {
-          // Dimmed-out pin — behave as if it isn't there.
+      if (!listenersAttached) {
+        listenersAttached = true;
+
+        map.on("mousemove", PIN_LAYER, (e) => {
+          const f = e.features?.[0];
+          if (!f) return;
+          const props = f.properties as { id: string; name: string; city: string; genre: string; color: string };
+          const genre = activeGenreRef.current;
+          if (genre !== "all" && props.genre !== genre) {
+            // Dimmed-out pin — behave as if it isn't there.
+            map.getCanvas().style.cursor = "";
+            clearHover();
+            hideTooltip();
+            return;
+          }
+          map.getCanvas().style.cursor = "pointer";
+          if (hoverIdRef.current !== props.id) {
+            clearHover();
+            hoverIdRef.current = props.id;
+            map.setFeatureState({ source: SOURCE_ID, id: props.id }, { hover: true });
+          }
+          const tip = tooltipRef.current;
+          if (tip && tooltipNameRef.current && tooltipCityRef.current) {
+            tooltipNameRef.current.textContent = props.name;
+            tooltipCityRef.current.textContent = props.city;
+            tooltipCityRef.current.style.color = props.color;
+            tip.style.left = `${e.point.x}px`;
+            tip.style.top = `${e.point.y}px`;
+            tip.style.opacity = "1";
+          }
+        });
+
+        map.on("mouseleave", PIN_LAYER, () => {
           map.getCanvas().style.cursor = "";
           clearHover();
           hideTooltip();
-          return;
-        }
-        map.getCanvas().style.cursor = "pointer";
-        if (hoverIdRef.current !== props.id) {
-          clearHover();
-          hoverIdRef.current = props.id;
-          map.setFeatureState({ source: SOURCE_ID, id: props.id }, { hover: true });
-        }
-        const tip = tooltipRef.current;
-        if (tip && tooltipNameRef.current && tooltipCityRef.current) {
-          tooltipNameRef.current.textContent = props.name;
-          tooltipCityRef.current.textContent = props.city;
-          tooltipCityRef.current.style.color = props.color;
-          tip.style.left = `${e.point.x}px`;
-          tip.style.top = `${e.point.y}px`;
-          tip.style.opacity = "1";
-        }
-      });
+        });
 
-      map.on("mouseleave", PIN_LAYER, () => {
-        map.getCanvas().style.cursor = "";
-        clearHover();
-        hideTooltip();
-      });
-
-      map.on("click", (e) => {
-        // Small bbox so pins are easy to hit on touch screens.
-        const pad = 6;
-        const features = map
-          .queryRenderedFeatures(
-            [
-              [e.point.x - pad, e.point.y - pad],
-              [e.point.x + pad, e.point.y + pad],
-            ],
-            { layers: [PIN_LAYER] }
-          )
-          .filter(
-            (f) =>
-              activeGenreRef.current === "all" ||
-              (f.properties as { genre: string }).genre === activeGenreRef.current
-          );
-        const hit = features[0];
-        if (hit) {
-          const loc = LOCATIONS.find((l) => l.id === (hit.properties as { id: string }).id);
-          if (loc) {
-            hideTooltip();
-            handleSelect(loc);
+        map.on("click", (e) => {
+          if (!map.getLayer(PIN_LAYER)) return;
+          // Small bbox so pins are easy to hit on touch screens.
+          const pad = 6;
+          const features = map
+            .queryRenderedFeatures(
+              [
+                [e.point.x - pad, e.point.y - pad],
+                [e.point.x + pad, e.point.y + pad],
+              ],
+              { layers: [PIN_LAYER] }
+            )
+            .filter(
+              (f) =>
+                activeGenreRef.current === "all" ||
+                (f.properties as { genre: string }).genre === activeGenreRef.current
+            );
+          const hit = features[0];
+          if (hit) {
+            const loc = LOCATIONS.find((l) => l.id === (hit.properties as { id: string }).id);
+            if (loc) {
+              hideTooltip();
+              handleSelect(loc);
+            }
+          } else if (selectedRef.current) {
+            // Clicking empty map dismisses the open panel (desktop has no backdrop).
+            handleClose();
           }
-        } else if (selectedRef.current) {
-          // Clicking empty map dismisses the open panel (desktop has no backdrop).
-          handleClose();
-        }
-      });
+        });
+      }
 
-      setMapReady(true);
-    });
+      setStyleVersion((v) => v + 1);
+    };
+
+    map.on("style.load", setupLayers);
 
     mapRef.current = map;
 
@@ -285,34 +323,47 @@ export default function Map({ activeGenre }: MapProps) {
       map.remove();
       mapRef.current = null;
     };
+    // theme intentionally excluded — the map is created once with whatever
+    // theme is current at mount; later changes are handled by the effect below.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handleSelect, handleClose, clearHover, hideTooltip]);
+
+  // Swap the basemap when the theme changes (skip the very first run — the
+  // map's already constructed with the correct starting style above).
+  useEffect(() => {
+    if (isFirstThemeRun.current) {
+      isFirstThemeRun.current = false;
+      return;
+    }
+    mapRef.current?.setStyle(MAP_STYLES[theme]);
+  }, [theme]);
 
   // Deep link: open a location directly if ?loc=<id> is present.
   useEffect(() => {
-    if (!mapReady) return;
+    if (!styleVersion) return;
     const params = new URLSearchParams(window.location.search);
     const requested = params.get("loc");
     if (requested) {
       const found = LOCATIONS.find((l) => l.id === requested);
       if (found) queueMicrotask(() => handleSelect(found));
     }
-  }, [mapReady, handleSelect]);
+  }, [styleVersion, handleSelect]);
 
   // Fade pins that don't match the active genre.
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapReady || !map.getLayer(PIN_LAYER)) return;
+    if (!map || !styleVersion || !map.getLayer(PIN_LAYER)) return;
     const match: mapboxgl.ExpressionSpecification | null =
       activeGenre === "all" ? null : ["==", ["get", "genre"], activeGenre];
     map.setPaintProperty(PIN_LAYER, "circle-opacity", match ? ["case", match, 1, 0.12] : 1);
     map.setPaintProperty(PIN_LAYER, "circle-stroke-opacity", match ? ["case", match, 1, 0.12] : 1);
     map.setPaintProperty(GLOW_LAYER, "circle-opacity", match ? ["case", match, 0.4, 0.04] : 0.4);
-  }, [activeGenre, mapReady]);
+  }, [activeGenre, styleVersion]);
 
   // Highlight the selected pin.
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapReady || !selected || !map.getSource(SOURCE_ID)) return;
+    if (!map || !styleVersion || !selected || !map.getSource(SOURCE_ID)) return;
     const id = selected.id;
     map.setFeatureState({ source: SOURCE_ID, id }, { selected: true });
     return () => {
@@ -320,7 +371,7 @@ export default function Map({ activeGenre }: MapProps) {
         mapRef.current.setFeatureState({ source: SOURCE_ID, id }, { selected: false });
       }
     };
-  }, [selected, mapReady]);
+  }, [selected, styleVersion]);
 
   return (
     <div className="relative w-full h-full">
@@ -388,7 +439,7 @@ export default function Map({ activeGenre }: MapProps) {
             title="Browse all locations"
             aria-label="Browse all locations as a list"
             className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full transition-all hover:scale-105"
-            style={{ background: "rgba(20,20,20,0.7)", border: "1px solid rgba(255,255,255,0.08)", color: "var(--fg2)", backdropFilter: "blur(10px)" }}
+            style={{ background: "var(--chip-bg)", border: "1px solid var(--chip-border)", color: "var(--fg2)", backdropFilter: "blur(10px)" }}
           >
             <List className="w-3.5 h-3.5" />
           </button>
@@ -398,6 +449,15 @@ export default function Map({ activeGenre }: MapProps) {
       {/* Floating action buttons */}
       {TOKEN && (
         <div className="absolute bottom-6 right-4 z-20 flex flex-col gap-2">
+          <button
+            onClick={handleResetView}
+            title="Reset view"
+            aria-label="Reset map to the world view"
+            className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-105"
+            style={{ background: "rgba(12,11,10,0.92)", border: "1px solid rgba(255,255,255,0.12)", color: "#fff" }}
+          >
+            <Locate className="w-4 h-4" />
+          </button>
           {selected && (
             <button
               onClick={handleShare}
