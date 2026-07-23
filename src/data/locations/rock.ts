@@ -536,4 +536,31 @@ export const rockLocations: Location[] = [
       },
     ],
   },
+  {
+    id: "bristol-idles",
+    name: "Bristol",
+    fullName: "Bristol, Southwest England",
+    city: "Bristol",
+    country: "UK",
+    lat: 51.4545,
+    lng: -2.5879,
+    genre: "rock",
+    era: "2009 – present",
+    coverUrl: img("photo-1470225620780-dba8ba36b745"),
+    description:
+      "A West Country city better known for trip-hop than punk, where five friends who'd met at sixth form and university ran their own DIY club night for eight years before anyone outside Bristol paid attention.",
+    artists: [
+      {
+        id: "idles",
+        name: "IDLES",
+        genre: "rock",
+        color: "#dc2626",
+        initials: "ID",
+        bio: "Joe Talbot and Adam Devonshire moved to Bristol to study and started IDLES in 2009, running their own 'Batcave' club night for years before 'Brutalism' (2017) made their politically blunt post-punk a critical phenomenon.",
+        albums: ["Brutalism", "Joy as an Act of Resistance", "Crawler"],
+        spotifyUrl: "https://open.spotify.com/search/IDLES%20Danny%20Nedelko",
+        signatureTrack: "Danny Nedelko",
+      },
+    ],
+  },
 ];

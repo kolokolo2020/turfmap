@@ -283,6 +283,18 @@ export const afrobeatsLocations: Location[] = [
         signatureTrack: "Calm Down",
         trending: true,
       },
+      {
+        id: "shallipopi",
+        name: "Shallipopi",
+        genre: "afrobeats",
+        color: "#d946ef",
+        initials: "SH",
+        bio: "Crown Uzama grew up in Benin City in a musical family before 'Elon Musk' (2023) went viral on TikTok and topped Nigeria's charts, blending street-pop, Afrobeats, and amapiano.",
+        albums: ["Presido Sound Vol. 1", "Shakespopi"],
+        spotifyUrl: "https://open.spotify.com/search/Shallipopi%20Elon%20Musk",
+        signatureTrack: "Elon Musk",
+        trending: true,
+      },
     ],
   },
 ];
