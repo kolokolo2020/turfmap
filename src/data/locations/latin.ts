@@ -272,4 +272,32 @@ export const latinLocations: Location[] = [
       },
     ],
   },
+  {
+    id: "honorio-gurgel-rio",
+    name: "Honório Gurgel",
+    fullName: "Honório Gurgel, North Rio de Janeiro",
+    city: "Rio de Janeiro",
+    country: "Brazil",
+    lat: -22.8339,
+    lng: -43.3444,
+    genre: "latin",
+    era: "2012 – present",
+    coverUrl: img("photo-1470225620780-dba8ba36b745"),
+    description:
+      "A working-class favela in North Rio with one of the lowest development indexes in the metro area. A girl who sang in her church choir here grew up to sell out arenas across the world in five languages, becoming Brazilian funk's biggest crossover ambassador.",
+    artists: [
+      {
+        id: "anitta",
+        name: "Anitta",
+        genre: "latin",
+        color: "#ec4899",
+        initials: "AN",
+        bio: "Larissa Machado grew up in the Honório Gurgel favela before funk carioca hits and 'Envolver' (2021) made her the first Brazilian artist to top Spotify's Global chart.",
+        albums: ["Kisses", "Girl from Rio", "Funk Generation"],
+        spotifyUrl: "https://open.spotify.com/search/Anitta%20Envolver",
+        signatureTrack: "Envolver",
+        trending: true,
+      },
+    ],
+  },
 ];
