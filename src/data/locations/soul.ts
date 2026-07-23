@@ -420,4 +420,32 @@ export const soulLocations: Location[] = [
       },
     ],
   },
+  {
+    id: "maplewood-new-jersey",
+    name: "Maplewood",
+    fullName: "Maplewood, Essex County",
+    city: "Maplewood, NJ",
+    country: "US",
+    lat: 40.7312,
+    lng: -74.2735,
+    genre: "soul",
+    era: "2017 – present",
+    coverUrl: img("photo-1470225620780-dba8ba36b745"),
+    description:
+      "A leafy New York City suburb where a Muslim, mixed-race kid grew up feeling like an outsider in both her family's traditions and the town around her — the isolation and self-doubt that became the emotional core of one of the decade's most acclaimed R&B catalogs.",
+    artists: [
+      {
+        id: "sza",
+        name: "SZA",
+        genre: "soul",
+        color: "#a855f7",
+        initials: "SZ",
+        bio: "Solána Rowe was born in St. Louis and raised in Maplewood, New Jersey. 'Ctrl' (2017) and 'SOS' (2022) made her the defining voice of alternative R&B's streaming era.",
+        albums: ["Ctrl", "SOS", "Lana"],
+        spotifyUrl: "https://open.spotify.com/search/SZA%20Kill%20Bill",
+        signatureTrack: "Kill Bill",
+        trending: true,
+      },
+    ],
+  },
 ];
