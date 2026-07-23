@@ -255,4 +255,32 @@ export const jazzLocations: Location[] = [
       },
     ],
   },
+  {
+    id: "bronx-jazz",
+    name: "The Bronx",
+    fullName: "The Bronx, New York",
+    city: "New York, NY",
+    country: "US",
+    lat: 40.8448,
+    lng: -73.8648,
+    genre: "jazz",
+    era: "2019 – present",
+    coverUrl: img("photo-1605721911519-3dfeb3be25e7"),
+    description:
+      "The same borough that invented hip-hop also quietly raised one of the most gifted vocalists of jazz's newest generation — proof the Bronx's musical range runs from breakbeats to bebop standards alike.",
+    artists: [
+      {
+        id: "samara-joy",
+        name: "Samara Joy",
+        genre: "jazz",
+        color: "#a855f7",
+        initials: "SJ",
+        bio: "Samara McLendon grew up in the Bronx in a musical family before her self-titled debut and 'Linger Awhile' won her the Grammy for Best New Artist in 2023 — a rare win for a traditional jazz vocalist.",
+        albums: ["Linger Awhile", "Portrait"],
+        spotifyUrl: "https://open.spotify.com/search/Samara%20Joy%20Tight",
+        signatureTrack: "Tight",
+        trending: true,
+      },
+    ],
+  },
 ];

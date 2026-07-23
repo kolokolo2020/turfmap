@@ -27,6 +27,7 @@ export const grimeLocations: Location[] = [
         albums: ["Wild West", "23", "Split Decision"],
         spotifyUrl: "https://open.spotify.com/artist/3uwAm6vQy7kQFD7VH9GROJ",
         signatureTrack: "Loading",
+        trending: true,
       },
       {
         id: "giggs",

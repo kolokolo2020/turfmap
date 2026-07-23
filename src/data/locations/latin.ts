@@ -91,6 +91,7 @@ export const latinLocations: Location[] = [
         albums: ["Ocean", "KG0516", "Mañana Será Bonito"],
         spotifyUrl: "https://open.spotify.com/search/Karol%20G%20Provenza",
         signatureTrack: "Provenza",
+        trending: true,
       },
       {
         id: "feid",

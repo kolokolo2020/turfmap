@@ -392,4 +392,32 @@ export const soulLocations: Location[] = [
       },
     ],
   },
+  {
+    id: "sacramento-soul",
+    name: "Sacramento",
+    fullName: "Sacramento, California",
+    city: "Sacramento, CA",
+    country: "US",
+    lat: 38.5816,
+    lng: -121.4944,
+    genre: "soul",
+    era: "2020 – present",
+    coverUrl: img("photo-1449824913935-59a10b8d2000"),
+    description:
+      "California's state capital, a city with little R&B pedigree, that raised a songwriter who spent a decade writing hits for other stars before her own breakout swept the Grammys.",
+    artists: [
+      {
+        id: "victoria-monet",
+        name: "Victoria Monét",
+        genre: "soul",
+        color: "#f472b6",
+        initials: "VM",
+        bio: "After years writing for Ariana Grande and Fifth Harmony, Victoria Monét's own 'Jaguar II' (2023) and 'On My Mama' won her the Grammy for Best New Artist in 2024.",
+        albums: ["Jaguar II"],
+        spotifyUrl: "https://open.spotify.com/search/Victoria%20Monet%20On%20My%20Mama",
+        signatureTrack: "On My Mama",
+        trending: true,
+      },
+    ],
+  },
 ];

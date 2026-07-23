@@ -496,4 +496,32 @@ export const rockLocations: Location[] = [
       },
     ],
   },
+  {
+    id: "isle-of-wight",
+    name: "Isle of Wight",
+    fullName: "Isle of Wight, English Channel",
+    city: "Isle of Wight",
+    country: "UK",
+    lat: 50.6936,
+    lng: -1.3043,
+    genre: "rock",
+    era: "2019 – present",
+    coverUrl: img("photo-1533106497176-45ae19e68ba2"),
+    description:
+      "A small island off England's south coast better known for its long-running music festival than for producing bands. Two childhood friends who grew up there wrote a deadpan song about a chaise longue and became indie rock's most unlikely overnight sensation.",
+    artists: [
+      {
+        id: "wet-leg",
+        name: "Wet Leg",
+        genre: "rock",
+        color: "#22c55e",
+        initials: "WL",
+        bio: "Rhian Teasdale and Hester Chambers grew up on the Isle of Wight together. Their debut single 'Chaise Longue' (2021) went viral and their self-titled album won the Grammy for Best Alternative Music Album.",
+        albums: ["Wet Leg", "moisturizer"],
+        spotifyUrl: "https://open.spotify.com/search/Wet%20Leg%20Chaise%20Longue",
+        signatureTrack: "Chaise Longue",
+        trending: true,
+      },
+    ],
+  },
 ];

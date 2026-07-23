@@ -77,6 +77,18 @@ export const kPopLocations: Location[] = [
         signatureTrack: "Super Shy",
         trending: true,
       },
+      {
+        id: "le-sserafim",
+        name: "LE SSERAFIM",
+        genre: "k-pop",
+        color: "#f43f5e",
+        initials: "LS",
+        bio: "Debuted in 2022 under Source Music, a HYBE label, LE SSERAFIM's 'Perfect Night' and 'Easy' made them one of the biggest fourth-generation girl groups on the charts.",
+        albums: ["Unforgiven", "Easy"],
+        spotifyUrl: "https://open.spotify.com/search/LE%20SSERAFIM%20Perfect%20Night",
+        signatureTrack: "Perfect Night",
+        trending: true,
+      },
     ],
   },
   {

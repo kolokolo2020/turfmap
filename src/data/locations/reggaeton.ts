@@ -173,6 +173,18 @@ export const reggaetonLocations: Location[] = [
         spotifyUrl: "https://open.spotify.com/search/Anuel%20AA%20Ella%20Quiere%20Beber",
         signatureTrack: "Ella Quiere Beber",
       },
+      {
+        id: "rauw-alejandro",
+        name: "Rauw Alejandro",
+        genre: "reggaeton",
+        color: "#0ea5e9",
+        initials: "RA",
+        bio: "Raúl Ocasio grew up in Carolina before genre-blending albums like 'Saturno' and 'Cosa Nuestra' (2024) made him one of reggaetón's most inventive current hitmakers.",
+        albums: ["Vice Versa", "Saturno", "Cosa Nuestra"],
+        spotifyUrl: "https://open.spotify.com/search/Rauw%20Alejandro%20Todo%20de%20Ti",
+        signatureTrack: "Todo de Ti",
+        trending: true,
+      },
     ],
   },
   {

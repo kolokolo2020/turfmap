@@ -80,6 +80,18 @@ export const afrobeatsLocations: Location[] = [
         signatureTrack: "Essence",
         trending: true,
       },
+      {
+        id: "ayra-starr",
+        name: "Ayra Starr",
+        genre: "afrobeats",
+        color: "#0ea5e9",
+        initials: "AY",
+        bio: "Signed to Mavin Records as a teenager, Ayra Starr's 'Rush' (2022) and 'Commas' (2024) made her one of the fastest-rising young voices in Afrobeats.",
+        albums: ["19 & Dangerous", "The Year I Turned 21"],
+        spotifyUrl: "https://open.spotify.com/search/Ayra%20Starr%20Rush",
+        signatureTrack: "Rush",
+        trending: true,
+      },
     ],
   },
   {
