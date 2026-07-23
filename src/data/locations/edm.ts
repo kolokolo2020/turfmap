@@ -475,4 +475,31 @@ export const edmLocations: Location[] = [
       },
     ],
   },
+  {
+    id: "dusseldorf-kraftwerk",
+    name: "Düsseldorf",
+    fullName: "Kling Klang Studio, Düsseldorf",
+    city: "Düsseldorf",
+    country: "Germany",
+    lat: 51.2277,
+    lng: 6.7735,
+    genre: "edm",
+    era: "1970 – present",
+    coverUrl: img("photo-1477959858617-67f85cf4f1df"),
+    description:
+      "A prosperous Rhineland city whose art-school students built their own soundproofed studio in a converted factory space and started making music entirely with synthesizers and drum machines — a decision that invented electronic pop as a genre and made every dance record since a descendant.",
+    artists: [
+      {
+        id: "kraftwerk",
+        name: "Kraftwerk",
+        genre: "edm",
+        color: "#facc15",
+        initials: "KW",
+        bio: "Ralf Hütter and Florian Schneider built Kling Klang Studio in Düsseldorf. 'Autobahn' (1974) and 'Trans-Europe Express' invented electronic pop's vocabulary — directly fathering techno, house, and hip-hop production alike.",
+        albums: ["Autobahn", "Trans-Europe Express", "Computer World"],
+        spotifyUrl: "https://open.spotify.com/search/Kraftwerk%20Trans-Europe%20Express",
+        signatureTrack: "Trans-Europe Express",
+      },
+    ],
+  },
 ];
