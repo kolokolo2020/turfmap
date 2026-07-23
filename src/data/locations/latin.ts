@@ -328,4 +328,32 @@ export const latinLocations: Location[] = [
       },
     ],
   },
+  {
+    id: "alexandria-virginia",
+    name: "Alexandria",
+    fullName: "Alexandria, Northern Virginia",
+    city: "Alexandria, VA",
+    country: "US",
+    lat: 38.8048,
+    lng: -77.0469,
+    genre: "latin",
+    era: "2012 – present",
+    coverUrl: img("photo-1496442226666-8d4d0e62e6e9"),
+    description:
+      "A Washington DC suburb where a Colombian-American girl split her childhood with a small town near Pereira, Colombia. She played saxophone in her high school jazz band before becoming one of the only artists moving fluidly between English and Spanish on her own terms.",
+    artists: [
+      {
+        id: "kali-uchis",
+        name: "Kali Uchis",
+        genre: "latin",
+        color: "#a855f7",
+        initials: "KU",
+        bio: "Karly Loaiza split her childhood between Alexandria, Virginia and Pereira, Colombia. 'Telepatía' (2020) and 'Moonlight' made her one of the few artists charting simultaneously in English and Spanish.",
+        albums: ["Isolation", "Sin Miedo (del Amor y Otros Demonios)", "Orquídeas"],
+        spotifyUrl: "https://open.spotify.com/search/Kali%20Uchis%20Telepatia",
+        signatureTrack: "Telepatía",
+        trending: true,
+      },
+    ],
+  },
 ];
