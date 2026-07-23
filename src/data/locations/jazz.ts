@@ -283,4 +283,31 @@ export const jazzLocations: Location[] = [
       },
     ],
   },
+  {
+    id: "village-vanguard-nyc",
+    name: "The Village Vanguard",
+    fullName: "178 7th Ave South, Greenwich Village",
+    city: "New York, NY",
+    country: "US",
+    lat: 40.7357,
+    lng: -74.0007,
+    genre: "jazz",
+    era: "1961",
+    coverUrl: img("photo-1477959858617-67f85cf4f1df"),
+    description:
+      "A tiny wedge-shaped basement club in Greenwich Village, jazz's most storied stage since 1935. A four-night stand here in November 1961 was dismissed by one critic as 'anti-jazz' — and is now regarded as a turning point toward free jazz.",
+    artists: [
+      {
+        id: "john-coltrane",
+        name: "John Coltrane",
+        genre: "jazz",
+        color: "#0369a1",
+        initials: "JC",
+        bio: "Coltrane's 1961 Village Vanguard residency, with Eric Dolphy and Elvin Jones, pushed hard bop toward extended, exploratory soloing — a bridge to the free jazz he'd fully embrace by the mid-60s.",
+        albums: ["A Love Supreme", "Giant Steps", "Live at the Village Vanguard"],
+        spotifyUrl: "https://open.spotify.com/search/John%20Coltrane%20A%20Love%20Supreme",
+        signatureTrack: "A Love Supreme, Pt. I – Acknowledgement",
+      },
+    ],
+  },
 ];

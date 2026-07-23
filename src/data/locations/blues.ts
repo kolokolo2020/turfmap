@@ -257,4 +257,31 @@ export const bluesLocations: Location[] = [
       },
     ],
   },
+  {
+    id: "indianola-mississippi",
+    name: "Indianola",
+    fullName: "Indianola, Sunflower County",
+    city: "Indianola, MS",
+    country: "US",
+    lat: 33.4507,
+    lng: -90.6448,
+    genre: "blues",
+    era: "1943 – 1947",
+    coverUrl: img("photo-1508700929628-666bc8bd84ea"),
+    description:
+      "A Mississippi Delta cotton town where a teenage tractor driver played blues on street corners for tips after his gospel choir wouldn't let him near 'the devil's music.' He called it his hometown for the rest of his life and returned to open a museum here.",
+    artists: [
+      {
+        id: "bb-king",
+        name: "B.B. King",
+        genre: "blues",
+        color: "#a78bfa",
+        initials: "BK",
+        bio: "Riley B. King moved to Indianola as a teenager, busking on its streets before hitchhiking to Memphis in 1947. His guitar 'Lucille' and the Delta blues he learned here made him the most globally recognized bluesman ever.",
+        albums: ["Live at the Regal", "Completely Well"],
+        spotifyUrl: "https://open.spotify.com/search/B.B.%20King%20The%20Thrill%20Is%20Gone",
+        signatureTrack: "The Thrill Is Gone",
+      },
+    ],
+  },
 ];
