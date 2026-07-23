@@ -65,6 +65,18 @@ export const kPopLocations: Location[] = [
         spotifyUrl: "https://open.spotify.com/search/BTS%20Dynamite",
         signatureTrack: "Dynamite",
       },
+      {
+        id: "newjeans",
+        name: "NewJeans",
+        genre: "k-pop",
+        color: "#22c55e",
+        initials: "NJ",
+        bio: "Debuted in 2022 under ADOR, a HYBE label, NewJeans' Y2K-inflected pop and 'Hype Boy'/'Super Shy' made them the fastest-rising group of K-pop's fourth generation.",
+        albums: ["New Jeans", "Get Up"],
+        spotifyUrl: "https://open.spotify.com/search/NewJeans%20Super%20Shy",
+        signatureTrack: "Super Shy",
+        trending: true,
+      },
     ],
   },
   {

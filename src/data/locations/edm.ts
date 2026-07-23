@@ -392,4 +392,32 @@ export const edmLocations: Location[] = [
       },
     ],
   },
+  {
+    id: "west-london-fred-again",
+    name: "West London",
+    fullName: "West London studio scene",
+    city: "London",
+    country: "UK",
+    lat: 51.5074,
+    lng: -0.2216,
+    genre: "edm",
+    era: "2022 – present",
+    coverUrl: img("photo-1470225620780-dba8ba36b745"),
+    description:
+      "A quieter corner of London's sprawl, far from the superclubs, where a former pop songwriter started posting diaristic, sample-heavy dance tracks under his childhood nickname. His 'Actual Life' album series became the defining sound of festival mainstages within two years.",
+    artists: [
+      {
+        id: "fred-again",
+        name: "Fred again..",
+        genre: "edm",
+        color: "#38bdf8",
+        initials: "FA",
+        bio: "Fred Gibson had already written hits for other pop stars before turning inward — his 'Actual Life' trilogy (2021–2022) samples voice notes and DMs into euphoric, diaristic dance music.",
+        albums: ["Actual Life 3", "Ten Days"],
+        spotifyUrl: "https://open.spotify.com/search/Fred%20again%20Delilah%20pull%20me%20out%20of%20this",
+        signatureTrack: "Delilah (pull me out of this)",
+        trending: true,
+      },
+    ],
+  },
 ];

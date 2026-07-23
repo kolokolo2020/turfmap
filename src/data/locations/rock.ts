@@ -468,4 +468,32 @@ export const rockLocations: Location[] = [
       },
     ],
   },
+  {
+    id: "baltimore-hardcore",
+    name: "Baltimore",
+    fullName: "Baltimore, Maryland",
+    city: "Baltimore, MD",
+    country: "US",
+    lat: 39.2904,
+    lng: -76.6122,
+    genre: "rock",
+    era: "2010 – present",
+    coverUrl: img("photo-1477959858617-67f85cf4f1df"),
+    description:
+      "A working-class port city with a tight-knit hardcore-punk scene that stayed almost entirely underground for a decade. One of its own bands then blew the doors off genre boundaries entirely, headlining festivals built for pop and rap acts.",
+    artists: [
+      {
+        id: "turnstile",
+        name: "Turnstile",
+        genre: "rock",
+        color: "#f97316",
+        initials: "TU",
+        bio: "Formed in Baltimore's hardcore scene, Turnstile's 'GLOW ON' (2021) earned Grammy nominations and mainstream festival slots most hardcore bands never see.",
+        albums: ["Time & Space", "GLOW ON", "Never Enough"],
+        spotifyUrl: "https://open.spotify.com/search/Turnstile%20Mystery",
+        signatureTrack: "Mystery",
+        trending: true,
+      },
+    ],
+  },
 ];
