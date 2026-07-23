@@ -12,7 +12,8 @@ export type Genre =
   | "edm"
   | "rock"
   | "soul"
-  | "reggaeton";
+  | "reggaeton"
+  | "pop";
 
 export interface Artist {
   id: string;

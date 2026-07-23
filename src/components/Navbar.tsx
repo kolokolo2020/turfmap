@@ -21,6 +21,7 @@ const GENRES = [
   "rock",
   "soul",
   "reggaeton",
+  "pop",
   "music-videos",
 ];
 
