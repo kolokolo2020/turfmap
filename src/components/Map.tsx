@@ -1,15 +1,16 @@
 "use client";
 
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { Shuffle, Share2, Check, List, Locate } from "lucide-react";
-import { LOCATIONS, GENRE_COLORS } from "@/data/locations";
+import { Shuffle, Share2, Check, List, Locate, Flame, Clock, TrendingUp } from "lucide-react";
+import { LOCATIONS, GENRE_COLORS, eraStartYear } from "@/data/locations";
 import { Location } from "@/lib/types";
 import type { Theme } from "@/hooks/useTheme";
 import ArtistPanel from "./ArtistPanel";
 import SearchBar from "./SearchBar";
 import LocationList from "./LocationList";
+import TimeSlider from "./TimeSlider";
 
 const MAP_STYLES: Record<Theme, string> = {
   dark: "mapbox://styles/mapbox/dark-v11",
@@ -24,6 +25,9 @@ const TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? "";
 const SOURCE_ID = "turf-locations";
 const PIN_LAYER = "turf-pins";
 const GLOW_LAYER = "turf-glow";
+const CLUSTER_LAYER = "turf-clusters";
+const CLUSTER_COUNT_LAYER = "turf-cluster-count";
+const HEATMAP_LAYER = "turf-heatmap";
 
 // Pins are GL circle layers, not DOM markers. DOM markers are positioned by
 // writing to el.style.transform — which fought our own hover/filter scale()
@@ -54,6 +58,34 @@ const glowRadius = [
   12, 24,
 ] as mapboxgl.ExpressionSpecification;
 
+// Cluster circle size/color scale with how many locations they group —
+// bigger, redder clusters mean "more to discover here." A fixed brand color
+// (rather than genre color) since a cluster's contents are usually mixed.
+const clusterRadius = [
+  "step", ["get", "point_count"],
+  16, 10,
+  20, 50,
+  26, 200,
+  32,
+] as mapboxgl.ExpressionSpecification;
+
+const clusterColor = [
+  "step", ["get", "point_count"],
+  "#f97316", 10,
+  "#ef4444", 50,
+  "#b91c1c", 200,
+  "#7f1d1d",
+] as mapboxgl.ExpressionSpecification;
+
+// Heatmap weight counts a cluster as its full point count, so density reads
+// correctly at low zoom where the same source is still clustered.
+const heatmapWeight = [
+  "case", ["has", "point_count"], ["min", ["/", ["get", "point_count"], 8], 6], 1,
+] as mapboxgl.ExpressionSpecification;
+
+const CURRENT_YEAR = new Date().getFullYear();
+const MIN_YEAR = Math.min(1900, ...LOCATIONS.map((l) => eraStartYear(l.era)));
+
 const locationsGeoJSON: GeoJSON.FeatureCollection<GeoJSON.Point> = {
   type: "FeatureCollection",
   features: LOCATIONS.map((loc) => ({
@@ -64,6 +96,8 @@ const locationsGeoJSON: GeoJSON.FeatureCollection<GeoJSON.Point> = {
       city: loc.city,
       genre: loc.genre,
       color: GENRE_COLORS[loc.genre] ?? "#ef4444",
+      startYear: eraStartYear(loc.era),
+      trending: loc.artists.some((a) => a.trending),
     },
     geometry: { type: "Point", coordinates: [loc.lng, loc.lat] },
   })),
@@ -83,6 +117,9 @@ export default function Map({ activeGenre, theme }: MapProps) {
   const hoverIdRef = useRef<string | null>(null);
   const activeGenreRef = useRef(activeGenre);
   const selectedRef = useRef<Location | null>(null);
+  const timeMachineOnRef = useRef(false);
+  const sliderYearRef = useRef(CURRENT_YEAR);
+  const trendingOnlyRef = useRef(false);
   const isFirstThemeRun = useRef(true);
   const [selected, setSelected] = useState<Location | null>(null);
   // Bumped every time the source + layers are (re)built — once on initial
@@ -92,6 +129,11 @@ export default function Map({ activeGenre, theme }: MapProps) {
   const [styleVersion, setStyleVersion] = useState(0);
   const [copied, setCopied] = useState(false);
   const [listOpen, setListOpen] = useState(false);
+  const [heatmapOn, setHeatmapOn] = useState(false);
+  const [timeMachineOn, setTimeMachineOn] = useState(false);
+  const [sliderYear, setSliderYear] = useState(CURRENT_YEAR);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [trendingOnly, setTrendingOnly] = useState(false);
 
   useEffect(() => {
     activeGenreRef.current = activeGenre;
@@ -100,6 +142,18 @@ export default function Map({ activeGenre, theme }: MapProps) {
   useEffect(() => {
     selectedRef.current = selected;
   }, [selected]);
+
+  useEffect(() => {
+    timeMachineOnRef.current = timeMachineOn;
+  }, [timeMachineOn]);
+
+  useEffect(() => {
+    sliderYearRef.current = sliderYear;
+  }, [sliderYear]);
+
+  useEffect(() => {
+    trendingOnlyRef.current = trendingOnly;
+  }, [trendingOnly]);
 
   const hideTooltip = useCallback(() => {
     if (tooltipRef.current) tooltipRef.current.style.opacity = "0";
@@ -141,13 +195,14 @@ export default function Map({ activeGenre, theme }: MapProps) {
   const handleShuffle = useCallback(() => {
     let pool =
       activeGenre === "all" ? LOCATIONS : LOCATIONS.filter((l) => l.genre === activeGenre);
+    if (trendingOnly) pool = pool.filter((l) => l.artists.some((a) => a.trending));
     if (pool.length > 1 && selectedRef.current) {
       pool = pool.filter((l) => l.id !== selectedRef.current!.id);
     }
     if (!pool.length) return;
     const pick = pool[Math.floor(Math.random() * pool.length)];
     handleSelect(pick);
-  }, [activeGenre, handleSelect]);
+  }, [activeGenre, trendingOnly, handleSelect]);
 
   const handleShare = useCallback(() => {
     navigator.clipboard?.writeText(window.location.href).then(() => {
@@ -155,6 +210,50 @@ export default function Map({ activeGenre, theme }: MapProps) {
       setTimeout(() => setCopied(false), 1800);
     });
   }, []);
+
+  const handleToggleHeatmap = useCallback(() => {
+    setHeatmapOn((v) => !v);
+  }, []);
+
+  const handleToggleTrending = useCallback(() => {
+    setTrendingOnly((v) => !v);
+  }, []);
+
+  const handleToggleTimeMachine = useCallback(() => {
+    setTimeMachineOn((v) => {
+      const next = !v;
+      if (next) {
+        setSliderYear(MIN_YEAR);
+      } else {
+        setIsPlaying(false);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleTogglePlay = useCallback(() => {
+    setIsPlaying((p) => {
+      const next = !p;
+      // Replaying from the end just re-runs the same frame forever — restart.
+      if (next && sliderYearRef.current >= CURRENT_YEAR) setSliderYear(MIN_YEAR);
+      return next;
+    });
+  }, []);
+
+  // Animate the slider forward a couple of years per tick while "playing."
+  useEffect(() => {
+    if (!isPlaying) return;
+    const id = setInterval(() => {
+      setSliderYear((y) => {
+        if (y >= CURRENT_YEAR) {
+          setIsPlaying(false);
+          return CURRENT_YEAR;
+        }
+        return Math.min(CURRENT_YEAR, y + 2);
+      });
+    }, 110);
+    return () => clearInterval(id);
+  }, [isPlaying]);
 
   // Close the panel on Escape — only while it's open, so a stray Escape
   // doesn't reset the map pitch for no reason.
@@ -210,13 +309,18 @@ export default function Map({ activeGenre, theme }: MapProps) {
         type: "geojson",
         data: locationsGeoJSON,
         promoteId: "id",
+        cluster: true,
+        clusterMaxZoom: 14,
+        clusterRadius: 50,
       });
 
-      // Soft halo under each pin — static, no animation cost.
+      // Soft halo under each pin — static, no animation cost. Clusters get
+      // their own layer below, so these two are unclustered points only.
       map.addLayer({
         id: GLOW_LAYER,
         type: "circle",
         source: SOURCE_ID,
+        filter: ["!", ["has", "point_count"]],
         paint: {
           "circle-radius": glowRadius,
           "circle-color": ["get", "color"],
@@ -229,11 +333,67 @@ export default function Map({ activeGenre, theme }: MapProps) {
         id: PIN_LAYER,
         type: "circle",
         source: SOURCE_ID,
+        filter: ["!", ["has", "point_count"]],
         paint: {
           "circle-radius": pinRadius,
           "circle-color": ["get", "color"],
           "circle-stroke-color": "#ffffff",
           "circle-stroke-width": 2,
+        },
+      });
+
+      // Cluster bubbles — shown instead of individual pins wherever many
+      // locations are close together at the current zoom. Sized/colored by
+      // how many locations they group.
+      map.addLayer({
+        id: CLUSTER_LAYER,
+        type: "circle",
+        source: SOURCE_ID,
+        filter: ["has", "point_count"],
+        paint: {
+          "circle-radius": clusterRadius,
+          "circle-color": clusterColor,
+          "circle-opacity": 0.88,
+          "circle-stroke-color": "#ffffff",
+          "circle-stroke-width": 2,
+        },
+      });
+
+      map.addLayer({
+        id: CLUSTER_COUNT_LAYER,
+        type: "symbol",
+        source: SOURCE_ID,
+        filter: ["has", "point_count"],
+        layout: {
+          "text-field": ["get", "point_count_abbreviated"],
+          "text-size": 12,
+          "text-font": ["DIN Pro Medium", "Arial Unicode MS Bold"],
+        },
+        paint: { "text-color": "#ffffff" },
+      });
+
+      // Density view — an alternate visualization toggled on by the flame
+      // button, hidden by default. Weighted by cluster size so it reads
+      // correctly even when zoomed out and the source is still clustered.
+      map.addLayer({
+        id: HEATMAP_LAYER,
+        type: "heatmap",
+        source: SOURCE_ID,
+        layout: { visibility: "none" },
+        paint: {
+          "heatmap-weight": heatmapWeight,
+          "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 1.5, 0.6, 9, 2],
+          "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 1.5, 14, 9, 34],
+          "heatmap-opacity": ["interpolate", ["linear"], ["zoom"], 1.5, 0.85, 14, 0.4],
+          "heatmap-color": [
+            "interpolate", ["linear"], ["heatmap-density"],
+            0, "rgba(0,0,0,0)",
+            0.2, "#3b82f6",
+            0.4, "#22c55e",
+            0.6, "#f59e0b",
+            0.8, "#ef4444",
+            1, "#f43f5e",
+          ],
         },
       });
 
@@ -243,9 +403,20 @@ export default function Map({ activeGenre, theme }: MapProps) {
         map.on("mousemove", PIN_LAYER, (e) => {
           const f = e.features?.[0];
           if (!f) return;
-          const props = f.properties as { id: string; name: string; city: string; genre: string; color: string };
+          const props = f.properties as {
+            id: string;
+            name: string;
+            city: string;
+            genre: string;
+            color: string;
+            startYear: number;
+            trending: boolean;
+          };
           const genre = activeGenreRef.current;
-          if (genre !== "all" && props.genre !== genre) {
+          const genreOk = genre === "all" || props.genre === genre;
+          const yearOk = !timeMachineOnRef.current || props.startYear <= sliderYearRef.current;
+          const trendingOk = !trendingOnlyRef.current || props.trending;
+          if (!genreOk || !yearOk || !trendingOk) {
             // Dimmed-out pin — behave as if it isn't there.
             map.getCanvas().style.cursor = "";
             clearHover();
@@ -275,6 +446,29 @@ export default function Map({ activeGenre, theme }: MapProps) {
           hideTooltip();
         });
 
+        map.on("mouseenter", CLUSTER_LAYER, () => {
+          map.getCanvas().style.cursor = "pointer";
+        });
+        map.on("mouseleave", CLUSTER_LAYER, () => {
+          map.getCanvas().style.cursor = "";
+        });
+
+        // Clicking a cluster zooms in just enough to break it apart.
+        map.on("click", CLUSTER_LAYER, (e) => {
+          const f = e.features?.[0];
+          if (!f) return;
+          const clusterId = (f.properties as { cluster_id: number }).cluster_id;
+          const source = map.getSource(SOURCE_ID) as mapboxgl.GeoJSONSource;
+          source.getClusterExpansionZoom(clusterId, (err, zoom) => {
+            if (err || zoom == null) return;
+            map.easeTo({
+              center: (f.geometry as GeoJSON.Point).coordinates as [number, number],
+              zoom,
+              duration: 600,
+            });
+          });
+        });
+
         map.on("click", (e) => {
           if (!map.getLayer(PIN_LAYER)) return;
           // Small bbox so pins are easy to hit on touch screens.
@@ -287,11 +481,15 @@ export default function Map({ activeGenre, theme }: MapProps) {
               ],
               { layers: [PIN_LAYER] }
             )
-            .filter(
-              (f) =>
-                activeGenreRef.current === "all" ||
-                (f.properties as { genre: string }).genre === activeGenreRef.current
-            );
+            .filter((f) => {
+              const p = f.properties as { genre: string; startYear: number; trending: boolean };
+              const genreOk =
+                activeGenreRef.current === "all" || p.genre === activeGenreRef.current;
+              const yearOk =
+                !timeMachineOnRef.current || p.startYear <= sliderYearRef.current;
+              const trendingOk = !trendingOnlyRef.current || p.trending;
+              return genreOk && yearOk && trendingOk;
+            });
           const hit = features[0];
           if (hit) {
             const loc = LOCATIONS.find((l) => l.id === (hit.properties as { id: string }).id);
@@ -349,16 +547,45 @@ export default function Map({ activeGenre, theme }: MapProps) {
     }
   }, [styleVersion, handleSelect]);
 
-  // Fade pins that don't match the active genre.
+  // Fade pins that don't match the active genre and/or the time machine's
+  // current year. Clusters are left alone — their contents are usually mixed
+  // genres/eras, so per-genre or per-year dimming of the aggregate wouldn't
+  // read cleanly; only the unclustered pin/glow layers respond.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !styleVersion || !map.getLayer(PIN_LAYER)) return;
-    const match: mapboxgl.ExpressionSpecification | null =
-      activeGenre === "all" ? null : ["==", ["get", "genre"], activeGenre];
-    map.setPaintProperty(PIN_LAYER, "circle-opacity", match ? ["case", match, 1, 0.12] : 1);
-    map.setPaintProperty(PIN_LAYER, "circle-stroke-opacity", match ? ["case", match, 1, 0.12] : 1);
-    map.setPaintProperty(GLOW_LAYER, "circle-opacity", match ? ["case", match, 0.4, 0.04] : 0.4);
-  }, [activeGenre, styleVersion]);
+
+    const conditions: mapboxgl.ExpressionSpecification[] = [];
+    if (activeGenre !== "all") conditions.push(["==", ["get", "genre"], activeGenre]);
+    if (timeMachineOn) conditions.push(["<=", ["get", "startYear"], sliderYear]);
+    if (trendingOnly) conditions.push(["==", ["get", "trending"], true]);
+
+    const buildExpr = (
+      visibleOpacity: number,
+      dimmedOpacity: number
+    ): mapboxgl.ExpressionSpecification | number => {
+      if (conditions.length === 0) return visibleOpacity;
+      const combined: mapboxgl.ExpressionSpecification =
+        conditions.length === 1 ? conditions[0] : (["all", ...conditions] as mapboxgl.ExpressionSpecification);
+      return ["case", combined, visibleOpacity, dimmedOpacity] as mapboxgl.ExpressionSpecification;
+    };
+
+    map.setPaintProperty(PIN_LAYER, "circle-opacity", buildExpr(1, 0.12));
+    map.setPaintProperty(PIN_LAYER, "circle-stroke-opacity", buildExpr(1, 0.12));
+    map.setPaintProperty(GLOW_LAYER, "circle-opacity", buildExpr(0.4, 0.04));
+  }, [activeGenre, timeMachineOn, sliderYear, trendingOnly, styleVersion]);
+
+  // Toggle between the pin/cluster view and the heatmap density view.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !styleVersion || !map.getLayer(HEATMAP_LAYER)) return;
+    const pinVisibility = heatmapOn ? "none" : "visible";
+    map.setLayoutProperty(HEATMAP_LAYER, "visibility", heatmapOn ? "visible" : "none");
+    map.setLayoutProperty(PIN_LAYER, "visibility", pinVisibility);
+    map.setLayoutProperty(GLOW_LAYER, "visibility", pinVisibility);
+    map.setLayoutProperty(CLUSTER_LAYER, "visibility", pinVisibility);
+    map.setLayoutProperty(CLUSTER_COUNT_LAYER, "visibility", pinVisibility);
+  }, [heatmapOn, styleVersion]);
 
   // Highlight the selected pin.
   useEffect(() => {
@@ -372,6 +599,12 @@ export default function Map({ activeGenre, theme }: MapProps) {
       }
     };
   }, [selected, styleVersion]);
+
+  const filteredLocations = useMemo(() => {
+    let list = activeGenre === "all" ? LOCATIONS : LOCATIONS.filter((l) => l.genre === activeGenre);
+    if (trendingOnly) list = list.filter((l) => l.artists.some((a) => a.trending));
+    return list;
+  }, [activeGenre, trendingOnly]);
 
   return (
     <div className="relative w-full h-full">
@@ -450,6 +683,48 @@ export default function Map({ activeGenre, theme }: MapProps) {
       {TOKEN && (
         <div className="absolute bottom-6 right-4 z-20 flex flex-col gap-2">
           <button
+            onClick={handleToggleTrending}
+            title="Show only artists trending in the last few years"
+            aria-label="Toggle trending artists only"
+            aria-pressed={trendingOnly}
+            className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-105"
+            style={
+              trendingOnly
+                ? { background: "#ef4444", color: "#fff", boxShadow: "0 2px 12px rgba(239,68,68,0.45)" }
+                : { background: "rgba(12,11,10,0.92)", border: "1px solid rgba(255,255,255,0.12)", color: "#fff" }
+            }
+          >
+            <TrendingUp className="w-4 h-4" />
+          </button>
+          <button
+            onClick={handleToggleTimeMachine}
+            title="Time Machine — travel through music history"
+            aria-label="Toggle the time machine slider"
+            aria-pressed={timeMachineOn}
+            className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-105"
+            style={
+              timeMachineOn
+                ? { background: "#ef4444", color: "#fff", boxShadow: "0 2px 12px rgba(239,68,68,0.45)" }
+                : { background: "rgba(12,11,10,0.92)", border: "1px solid rgba(255,255,255,0.12)", color: "#fff" }
+            }
+          >
+            <Clock className="w-4 h-4" />
+          </button>
+          <button
+            onClick={handleToggleHeatmap}
+            title="Toggle heatmap density view"
+            aria-label="Toggle heatmap density view"
+            aria-pressed={heatmapOn}
+            className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-105"
+            style={
+              heatmapOn
+                ? { background: "#ef4444", color: "#fff", boxShadow: "0 2px 12px rgba(239,68,68,0.45)" }
+                : { background: "rgba(12,11,10,0.92)", border: "1px solid rgba(255,255,255,0.12)", color: "#fff" }
+            }
+          >
+            <Flame className="w-4 h-4" />
+          </button>
+          <button
             onClick={handleResetView}
             title="Reset view"
             aria-label="Reset map to the world view"
@@ -481,11 +756,26 @@ export default function Map({ activeGenre, theme }: MapProps) {
         </div>
       )}
 
+      {timeMachineOn && (
+        <TimeSlider
+          year={sliderYear}
+          minYear={MIN_YEAR}
+          maxYear={CURRENT_YEAR}
+          playing={isPlaying}
+          onYearChange={(y) => {
+            setIsPlaying(false);
+            setSliderYear(y);
+          }}
+          onTogglePlay={handleTogglePlay}
+          onClose={handleToggleTimeMachine}
+        />
+      )}
+
       <ArtistPanel location={selected} onClose={handleClose} />
 
       <LocationList
         open={listOpen}
-        locations={activeGenre === "all" ? LOCATIONS : LOCATIONS.filter((l) => l.genre === activeGenre)}
+        locations={filteredLocations}
         onSelect={handleSelect}
         onClose={() => setListOpen(false)}
       />

@@ -6,7 +6,23 @@ import { GENRE_COLORS, GENRE_LABELS, LOCATIONS } from "@/data/locations";
 import type { Theme } from "@/hooks/useTheme";
 import AboutModal from "./AboutModal";
 
-const GENRES = ["all", "hip-hop", "grime", "reggae", "afrobeats", "latin", "jazz", "blues", "country", "music-videos"];
+const GENRES = [
+  "all",
+  "hip-hop",
+  "grime",
+  "reggae",
+  "afrobeats",
+  "latin",
+  "jazz",
+  "blues",
+  "country",
+  "k-pop",
+  "edm",
+  "rock",
+  "soul",
+  "reggaeton",
+  "music-videos",
+];
 
 interface NavbarProps {
   activeGenre: string;
