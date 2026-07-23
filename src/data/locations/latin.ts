@@ -300,4 +300,32 @@ export const latinLocations: Location[] = [
       },
     ],
   },
+  {
+    id: "edinburg-texas",
+    name: "Edinburg",
+    fullName: "Edinburg, Rio Grande Valley",
+    city: "Edinburg, TX",
+    country: "US",
+    lat: 26.3017,
+    lng: -98.1633,
+    genre: "latin",
+    era: "2019 – present",
+    coverUrl: img("photo-1508700929628-666bc8bd84ea"),
+    description:
+      "A Rio Grande Valley city on the Texas-Mexico border where five friends started playing weddings and quinceañeras for extra cash. Within three years they were on stage with Bad Bunny, carrying norteño and cumbia further into the US mainstream than any group before them.",
+    artists: [
+      {
+        id: "grupo-frontera",
+        name: "Grupo Frontera",
+        genre: "latin",
+        color: "#f97316",
+        initials: "GF",
+        bio: "Formed in Edinburg in 2019 playing local parties, Grupo Frontera's 'un x100to' with Bad Bunny (2023) became a crossover hit that pushed norteño-cumbia fusion onto the Billboard Hot 100.",
+        albums: ["El Comienzo", "Jugando a Que No Pasa Nada"],
+        spotifyUrl: "https://open.spotify.com/search/Grupo%20Frontera%20un%20x100to",
+        signatureTrack: "un x100to",
+        trending: true,
+      },
+    ],
+  },
 ];

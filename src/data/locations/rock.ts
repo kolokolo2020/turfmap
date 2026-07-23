@@ -260,6 +260,18 @@ export const rockLocations: Location[] = [
         spotifyUrl: "https://open.spotify.com/search/U2%20Where%20the%20Streets%20Have%20No%20Name",
         signatureTrack: "Where the Streets Have No Name",
       },
+      {
+        id: "fontaines-dc",
+        name: "Fontaines D.C.",
+        genre: "rock",
+        color: "#64748b",
+        initials: "FD",
+        bio: "Formed at BIMM Dublin in 2014, Fontaines D.C. — the initials stand for Dublin City — built a post-punk following on the capital's pub circuit before 'Dogrel' (2019) and 'Romance' (2024) made them the most acclaimed Irish rock band in a generation.",
+        albums: ["Dogrel", "Skinty Fia", "Romance"],
+        spotifyUrl: "https://open.spotify.com/search/Fontaines%20DC%20Starburster",
+        signatureTrack: "Starburster",
+        trending: true,
+      },
     ],
   },
   {
