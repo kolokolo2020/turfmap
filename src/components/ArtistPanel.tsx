@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { Location, Artist } from "@/lib/types";
 import { GENRE_LABELS } from "@/data/locations";
-import { X, MapPin, Calendar, Play, Disc3, Camera, Video } from "lucide-react";
+import { X, MapPin, Calendar, Play, Disc3, Camera, Video, TrendingUp } from "lucide-react";
 import StreetView from "./StreetView";
 
 interface ArtistPanelProps {
@@ -82,6 +82,15 @@ function ArtistCard({ artist }: { artist: Artist }) {
               {GENRE_LABELS[artist.genre] ?? artist.genre}
             </p>
           </div>
+          {artist.trending && (
+            <span
+              className="label shrink-0 ml-auto flex items-center gap-1 px-2 py-1 rounded-full"
+              style={{ background: "rgba(239,68,68,0.18)", color: "#f87171", border: "1px solid rgba(239,68,68,0.35)" }}
+            >
+              <TrendingUp className="w-2.5 h-2.5" />
+              Trending
+            </span>
+          )}
         </div>
 
         {/* Bio */}

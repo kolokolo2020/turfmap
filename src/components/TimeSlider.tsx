@@ -22,6 +22,10 @@ export default function TimeSlider({
   onClose,
 }: TimeSliderProps) {
   const pct = ((year - minYear) / (maxYear - minYear)) * 100;
+  const tickCount = 5;
+  const ticks = Array.from({ length: tickCount }, (_, i) =>
+    Math.round(minYear + (i / (tickCount - 1)) * (maxYear - minYear))
+  );
 
   return (
     <div
@@ -65,6 +69,13 @@ export default function TimeSlider({
             background: `linear-gradient(to right, #ef4444 ${pct}%, var(--chip-bg) ${pct}%)`,
           }}
         />
+        <div className="flex items-center justify-between" aria-hidden="true">
+          {ticks.map((t) => (
+            <span key={t} className="text-[9px] font-semibold tabular-nums" style={{ color: "var(--fg2)" }}>
+              {t}
+            </span>
+          ))}
+        </div>
       </div>
 
       <button

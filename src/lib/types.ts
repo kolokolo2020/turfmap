@@ -27,6 +27,7 @@ export interface Artist {
   signatureTrack: string;
   videoTitle?: string;   // the music video shot at this location, if any
   videoUrl?: string;     // link to watch it
+  trending?: boolean;    // broke out in roughly the last 3 years — surfaced by the Trending filter
 }
 
 export interface Location {

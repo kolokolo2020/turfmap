@@ -67,8 +67,12 @@ export default function AboutModal({ open, onClose }: AboutModalProps) {
             </button>
           </div>
 
-          <p className="text-sm leading-relaxed mb-4" style={{ color: "var(--fg2)" }}>
+          <p className="text-sm leading-relaxed mb-3" style={{ color: "var(--fg2)" }}>
             {`TURF maps ${LOCATIONS.length} neighborhoods, blocks, and streets around the world to the genres and artists that were born there — from Clarksdale’s Delta blues to Kingston’s reggae to Lagos’ afrobeats. Click a pin to explore its artists, discography, and signature tracks.`}
+          </p>
+
+          <p className="text-xs leading-relaxed mb-4" style={{ color: "var(--fg2)" }}>
+            Scrub the <strong style={{ color: "var(--fg)" }}>Time Machine</strong> to watch genres spread across decades, switch to the <strong style={{ color: "var(--fg)" }}>heatmap</strong> to see where the world&apos;s music is densest, or flip on <strong style={{ color: "var(--fg)" }}>Trending</strong> to see only artists who broke out in the last few years.
           </p>
 
           <p className="label mb-2" style={{ color: "var(--fg3)" }}>Genres on the map</p>

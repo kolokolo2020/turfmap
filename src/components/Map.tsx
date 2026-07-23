@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { Shuffle, Share2, Check, List, Locate, Flame, Clock } from "lucide-react";
+import { Shuffle, Share2, Check, List, Locate, Flame, Clock, TrendingUp } from "lucide-react";
 import { LOCATIONS, GENRE_COLORS, eraStartYear } from "@/data/locations";
 import { Location } from "@/lib/types";
 import type { Theme } from "@/hooks/useTheme";
@@ -97,6 +97,7 @@ const locationsGeoJSON: GeoJSON.FeatureCollection<GeoJSON.Point> = {
       genre: loc.genre,
       color: GENRE_COLORS[loc.genre] ?? "#ef4444",
       startYear: eraStartYear(loc.era),
+      trending: loc.artists.some((a) => a.trending),
     },
     geometry: { type: "Point", coordinates: [loc.lng, loc.lat] },
   })),
@@ -118,6 +119,7 @@ export default function Map({ activeGenre, theme }: MapProps) {
   const selectedRef = useRef<Location | null>(null);
   const timeMachineOnRef = useRef(false);
   const sliderYearRef = useRef(CURRENT_YEAR);
+  const trendingOnlyRef = useRef(false);
   const isFirstThemeRun = useRef(true);
   const [selected, setSelected] = useState<Location | null>(null);
   // Bumped every time the source + layers are (re)built — once on initial
@@ -131,6 +133,7 @@ export default function Map({ activeGenre, theme }: MapProps) {
   const [timeMachineOn, setTimeMachineOn] = useState(false);
   const [sliderYear, setSliderYear] = useState(CURRENT_YEAR);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [trendingOnly, setTrendingOnly] = useState(false);
 
   useEffect(() => {
     activeGenreRef.current = activeGenre;
@@ -147,6 +150,10 @@ export default function Map({ activeGenre, theme }: MapProps) {
   useEffect(() => {
     sliderYearRef.current = sliderYear;
   }, [sliderYear]);
+
+  useEffect(() => {
+    trendingOnlyRef.current = trendingOnly;
+  }, [trendingOnly]);
 
   const hideTooltip = useCallback(() => {
     if (tooltipRef.current) tooltipRef.current.style.opacity = "0";
@@ -188,13 +195,14 @@ export default function Map({ activeGenre, theme }: MapProps) {
   const handleShuffle = useCallback(() => {
     let pool =
       activeGenre === "all" ? LOCATIONS : LOCATIONS.filter((l) => l.genre === activeGenre);
+    if (trendingOnly) pool = pool.filter((l) => l.artists.some((a) => a.trending));
     if (pool.length > 1 && selectedRef.current) {
       pool = pool.filter((l) => l.id !== selectedRef.current!.id);
     }
     if (!pool.length) return;
     const pick = pool[Math.floor(Math.random() * pool.length)];
     handleSelect(pick);
-  }, [activeGenre, handleSelect]);
+  }, [activeGenre, trendingOnly, handleSelect]);
 
   const handleShare = useCallback(() => {
     navigator.clipboard?.writeText(window.location.href).then(() => {
@@ -205,6 +213,10 @@ export default function Map({ activeGenre, theme }: MapProps) {
 
   const handleToggleHeatmap = useCallback(() => {
     setHeatmapOn((v) => !v);
+  }, []);
+
+  const handleToggleTrending = useCallback(() => {
+    setTrendingOnly((v) => !v);
   }, []);
 
   const handleToggleTimeMachine = useCallback(() => {
@@ -398,11 +410,13 @@ export default function Map({ activeGenre, theme }: MapProps) {
             genre: string;
             color: string;
             startYear: number;
+            trending: boolean;
           };
           const genre = activeGenreRef.current;
           const genreOk = genre === "all" || props.genre === genre;
           const yearOk = !timeMachineOnRef.current || props.startYear <= sliderYearRef.current;
-          if (!genreOk || !yearOk) {
+          const trendingOk = !trendingOnlyRef.current || props.trending;
+          if (!genreOk || !yearOk || !trendingOk) {
             // Dimmed-out pin — behave as if it isn't there.
             map.getCanvas().style.cursor = "";
             clearHover();
@@ -468,12 +482,13 @@ export default function Map({ activeGenre, theme }: MapProps) {
               { layers: [PIN_LAYER] }
             )
             .filter((f) => {
-              const p = f.properties as { genre: string; startYear: number };
+              const p = f.properties as { genre: string; startYear: number; trending: boolean };
               const genreOk =
                 activeGenreRef.current === "all" || p.genre === activeGenreRef.current;
               const yearOk =
                 !timeMachineOnRef.current || p.startYear <= sliderYearRef.current;
-              return genreOk && yearOk;
+              const trendingOk = !trendingOnlyRef.current || p.trending;
+              return genreOk && yearOk && trendingOk;
             });
           const hit = features[0];
           if (hit) {
@@ -540,28 +555,25 @@ export default function Map({ activeGenre, theme }: MapProps) {
     const map = mapRef.current;
     if (!map || !styleVersion || !map.getLayer(PIN_LAYER)) return;
 
-    const genreMatch: mapboxgl.ExpressionSpecification | null =
-      activeGenre === "all" ? null : ["==", ["get", "genre"], activeGenre];
-    const yearMatch: mapboxgl.ExpressionSpecification | null = timeMachineOn
-      ? ["<=", ["get", "startYear"], sliderYear]
-      : null;
+    const conditions: mapboxgl.ExpressionSpecification[] = [];
+    if (activeGenre !== "all") conditions.push(["==", ["get", "genre"], activeGenre]);
+    if (timeMachineOn) conditions.push(["<=", ["get", "startYear"], sliderYear]);
+    if (trendingOnly) conditions.push(["==", ["get", "trending"], true]);
 
     const buildExpr = (
       visibleOpacity: number,
       dimmedOpacity: number
     ): mapboxgl.ExpressionSpecification | number => {
-      if (genreMatch && yearMatch) {
-        return ["case", ["all", genreMatch, yearMatch], visibleOpacity, dimmedOpacity] as mapboxgl.ExpressionSpecification;
-      }
-      if (genreMatch) return ["case", genreMatch, visibleOpacity, dimmedOpacity] as mapboxgl.ExpressionSpecification;
-      if (yearMatch) return ["case", yearMatch, visibleOpacity, dimmedOpacity] as mapboxgl.ExpressionSpecification;
-      return visibleOpacity;
+      if (conditions.length === 0) return visibleOpacity;
+      const combined: mapboxgl.ExpressionSpecification =
+        conditions.length === 1 ? conditions[0] : (["all", ...conditions] as mapboxgl.ExpressionSpecification);
+      return ["case", combined, visibleOpacity, dimmedOpacity] as mapboxgl.ExpressionSpecification;
     };
 
     map.setPaintProperty(PIN_LAYER, "circle-opacity", buildExpr(1, 0.12));
     map.setPaintProperty(PIN_LAYER, "circle-stroke-opacity", buildExpr(1, 0.12));
     map.setPaintProperty(GLOW_LAYER, "circle-opacity", buildExpr(0.4, 0.04));
-  }, [activeGenre, timeMachineOn, sliderYear, styleVersion]);
+  }, [activeGenre, timeMachineOn, sliderYear, trendingOnly, styleVersion]);
 
   // Toggle between the pin/cluster view and the heatmap density view.
   useEffect(() => {
@@ -588,10 +600,11 @@ export default function Map({ activeGenre, theme }: MapProps) {
     };
   }, [selected, styleVersion]);
 
-  const filteredLocations = useMemo(
-    () => (activeGenre === "all" ? LOCATIONS : LOCATIONS.filter((l) => l.genre === activeGenre)),
-    [activeGenre]
-  );
+  const filteredLocations = useMemo(() => {
+    let list = activeGenre === "all" ? LOCATIONS : LOCATIONS.filter((l) => l.genre === activeGenre);
+    if (trendingOnly) list = list.filter((l) => l.artists.some((a) => a.trending));
+    return list;
+  }, [activeGenre, trendingOnly]);
 
   return (
     <div className="relative w-full h-full">
@@ -669,6 +682,20 @@ export default function Map({ activeGenre, theme }: MapProps) {
       {/* Floating action buttons */}
       {TOKEN && (
         <div className="absolute bottom-6 right-4 z-20 flex flex-col gap-2">
+          <button
+            onClick={handleToggleTrending}
+            title="Show only artists trending in the last few years"
+            aria-label="Toggle trending artists only"
+            aria-pressed={trendingOnly}
+            className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-105"
+            style={
+              trendingOnly
+                ? { background: "#ef4444", color: "#fff", boxShadow: "0 2px 12px rgba(239,68,68,0.45)" }
+                : { background: "rgba(12,11,10,0.92)", border: "1px solid rgba(255,255,255,0.12)", color: "#fff" }
+            }
+          >
+            <TrendingUp className="w-4 h-4" />
+          </button>
           <button
             onClick={handleToggleTimeMachine}
             title="Time Machine — travel through music history"
