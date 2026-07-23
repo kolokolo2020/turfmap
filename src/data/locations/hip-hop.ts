@@ -1506,4 +1506,31 @@ export const hipHopLocations: Location[] = [
       },
     ],
   },
+  {
+    id: "boulogne-billancourt-france",
+    name: "Boulogne-Billancourt",
+    fullName: "Boulogne-Billancourt, Hauts-de-Seine",
+    city: "Boulogne-Billancourt",
+    country: "France",
+    lat: 48.8352,
+    lng: 2.2400,
+    genre: "hip-hop",
+    era: "1994 – present",
+    coverUrl: img("photo-1483721310020-03333e577078"),
+    description:
+      "A Paris suburb better known for old film studios than rap, which raised a Senegalese-French kid who became the single most influential figure in French hip-hop — sampled, quoted, and picked fights with practically every rapper who came after him.",
+    artists: [
+      {
+        id: "booba",
+        name: "Booba",
+        genre: "hip-hop",
+        color: "#1f2937",
+        initials: "BB",
+        bio: "Élie Yaffa grew up in Boulogne-Billancourt, debuting with the duo Lunatic before a two-decade solo run made him French rap's most commercially dominant and combative figure.",
+        albums: ["Temps Mort", "Ouest Side", "Nero Nemesis"],
+        spotifyUrl: "https://open.spotify.com/search/Booba%20Boulbi",
+        signatureTrack: "Boulbi",
+      },
+    ],
+  },
 ];

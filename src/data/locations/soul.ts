@@ -448,4 +448,31 @@ export const soulLocations: Location[] = [
       },
     ],
   },
+  {
+    id: "mannheim-xavier-naidoo",
+    name: "Mannheim",
+    fullName: "Mannheim, Baden-Württemberg",
+    city: "Mannheim",
+    country: "Germany",
+    lat: 49.4875,
+    lng: 8.4660,
+    genre: "soul",
+    era: "1998 – present",
+    coverUrl: img("photo-1508700929628-666bc8bd84ea"),
+    description:
+      "A grid-planned industrial city on the Rhine whose most famous musical son built a deep, gospel-influenced German-language soul sound almost nobody thought would sell — 'Dieser Weg' proved an entire country could embrace soul music sung in its own tongue.",
+    artists: [
+      {
+        id: "xavier-naidoo",
+        name: "Xavier Naidoo",
+        genre: "soul",
+        color: "#a78bfa",
+        initials: "XN",
+        bio: "Xavier Naidoo built Mannheim's Söhne Mannheims collective and 'Dieser Weg' (2005) into a German-language soul phenomenon, becoming one of the country's best-selling solo artists.",
+        albums: ["Nicht von dieser Welt", "Alles kann besser werden"],
+        spotifyUrl: "https://open.spotify.com/search/Xavier%20Naidoo%20Dieser%20Weg",
+        signatureTrack: "Dieser Weg",
+      },
+    ],
+  },
 ];
