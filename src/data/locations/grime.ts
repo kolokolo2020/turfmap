@@ -270,4 +270,32 @@ export const grimeLocations: Location[] = [
       },
     ],
   },
+  {
+    id: "basildon-essex",
+    name: "Basildon",
+    fullName: "Basildon, Essex",
+    city: "Basildon",
+    country: "UK",
+    lat: 51.5761,
+    lng: 0.4573,
+    genre: "grime",
+    era: "2022 – present",
+    coverUrl: img("photo-1531058020387-3be344556be6"),
+    description:
+      "A quiet Essex commuter town an hour outside London, about as far from grime's East London birthplace as the UK underground gets. A teenager making beats on a pirated copy of FL Studio built a global following from his bedroom here.",
+    artists: [
+      {
+        id: "fakemink",
+        name: "fakemink",
+        genre: "grime",
+        color: "#38bdf8",
+        initials: "FM",
+        bio: "Vincenzo Bhatia was raised in Basildon after early childhood in East London. Self-taught on FL Studio from age nine, he's credited with popularizing the current wave of UK underground rap.",
+        albums: ["Terrified."],
+        spotifyUrl: "https://open.spotify.com/search/fakemink%20Terrified",
+        signatureTrack: "Terrified.",
+        trending: true,
+      },
+    ],
+  },
 ];

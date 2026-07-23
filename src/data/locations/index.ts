@@ -13,6 +13,7 @@ import { edmLocations } from "./edm";
 import { rockLocations } from "./rock";
 import { soulLocations } from "./soul";
 import { reggaetonLocations } from "./reggaeton";
+import { popLocations } from "./pop";
 
 export { eraStartYear } from "./helpers";
 
@@ -31,6 +32,7 @@ export const LOCATIONS: Location[] = [
   ...rockLocations,
   ...soulLocations,
   ...reggaetonLocations,
+  ...popLocations,
 ];
 
 export const GENRE_COLORS = {
@@ -48,6 +50,7 @@ export const GENRE_COLORS = {
   "rock":         "#64748b",
   "soul":         "#78350f",
   "reggaeton":    "#0d9488",
+  "pop":          "#d946ef",
 } satisfies Record<Genre, string> as Record<string, string>;
 
 export const GENRE_LABELS = {
@@ -65,4 +68,5 @@ export const GENRE_LABELS = {
   "rock":         "Rock",
   "soul":         "Soul",
   "reggaeton":    "Reggaetón",
+  "pop":          "Pop",
 } satisfies Record<Genre, string> as Record<string, string>;
