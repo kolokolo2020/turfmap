@@ -189,6 +189,18 @@ export const reggaeLocations: Location[] = [
         spotifyUrl: "https://open.spotify.com/search/Steel%20Pulse%20Ku%20Klux%20Klan",
         signatureTrack: "Ku Klux Klan",
       },
+      {
+        id: "ub40",
+        name: "UB40",
+        genre: "reggae",
+        color: "#16a34a",
+        initials: "U40",
+        imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/UB40in2010.jpg/330px-UB40in2010.jpg",
+        bio: "Formed in Birmingham in December 1978 and named after the unemployment benefit form, UB40 fused reggae with pop, sold over 100 million records worldwide, and topped the UK singles chart with 'Red Red Wine' in 1983.",
+        albums: ["Signing Off", "Labour of Love"],
+        spotifyUrl: "https://open.spotify.com/search/UB40%20Red%20Red%20Wine",
+        signatureTrack: "Red Red Wine",
+      },
     ],
   },
   {
