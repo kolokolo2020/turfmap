@@ -1120,6 +1120,17 @@ export const hipHopLocations: Location[] = [
         spotifyUrl: "https://open.spotify.com/search/R%C3%B6delheim%20Hartreim%20Projekt%20Niemand%20wie%20ihr",
         signatureTrack: "Niemand wie ihr",
       },
+      {
+        id: "sabrina-setlur",
+        name: "Sabrina Setlur",
+        genre: "hip-hop",
+        color: "#be185d",
+        initials: "SS",
+        bio: "Sabrina Setlur grew up in Frankfurt and, working closely with Moses Pelham, became one of the most commercially successful female rappers in German music history through the late 1990s and 2000s.",
+        albums: ["Die Neue S-Klasse", "Wer Hätte Das Gedacht"],
+        spotifyUrl: "https://open.spotify.com/search/Sabrina%20Setlur%20Du%20liebst%20mich%20nicht",
+        signatureTrack: "Du liebst mich nicht",
+      },
     ],
   },
   {
