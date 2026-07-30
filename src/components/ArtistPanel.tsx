@@ -4,15 +4,22 @@ import { useState } from "react";
 import Image from "next/image";
 import { Location, Artist } from "@/lib/types";
 import { GENRE_LABELS } from "@/data/locations";
-import { X, MapPin, Calendar, Play, Disc3, Camera, Video, TrendingUp } from "lucide-react";
+import { X, MapPin, Calendar, Disc3, Camera, Video, TrendingUp } from "lucide-react";
 import StreetView from "./StreetView";
+import TrackPlayer from "./TrackPlayer";
+import VideoPreview from "./VideoPreview";
 
 interface ArtistPanelProps {
   location: Location | null;
   onClose: () => void;
 }
 
-function ArtistCard({ artist }: { artist: Artist }) {
+function ArtistCard({ artist, onWatchVideo }: { artist: Artist; onWatchVideo: (artist: Artist) => void }) {
+  // Some Wikipedia image URLs 404 — fall back to the initials avatar instead
+  // of a broken-image glyph rather than trusting imageUrl's mere presence.
+  const [imgFailed, setImgFailed] = useState(false);
+  const hasImage = !!artist.imageUrl && !imgFailed;
+
   return (
     <div
       className="relative flex-none w-80 rounded-md overflow-hidden transition-transform duration-200 hover:-translate-y-0.5"
@@ -20,7 +27,7 @@ function ArtistCard({ artist }: { artist: Artist }) {
     >
       {/* Wallpaper background — the artist's own photo, blurred + darkened */}
       <div className="absolute inset-0" style={{ background: "#0c0b0a" }}>
-        {artist.imageUrl ? (
+        {hasImage ? (
           <div
             className="absolute inset-0"
             style={{
@@ -54,15 +61,16 @@ function ArtistCard({ artist }: { artist: Artist }) {
               padding: "2px",
             }}
           >
-            {artist.imageUrl ? (
+            {hasImage ? (
               <div className="relative w-full h-full rounded-full overflow-hidden" style={{ background: "#0c0b0a" }}>
                 <Image
-                  src={artist.imageUrl}
+                  src={artist.imageUrl!}
                   alt={artist.name}
                   fill
                   className="object-cover"
                   sizes="56px"
                   unoptimized
+                  onError={() => setImgFailed(true)}
                 />
               </div>
             ) : (
@@ -120,32 +128,13 @@ function ArtistCard({ artist }: { artist: Artist }) {
         )}
 
         {/* Signature track */}
-        <a
-          href={artist.spotifyUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group flex items-center justify-between p-2.5 rounded-sm transition-colors"
-          style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(255,255,255,0.1)" }}
-        >
-          <div className="min-w-0 mr-2">
-            <p className="label mb-0.5" style={{ color: "rgba(255,255,255,0.45)" }}>Signature Track</p>
-            <p className="text-xs font-semibold text-white truncate">{artist.signatureTrack}</p>
-          </div>
-          <span
-            className="shrink-0 w-7 h-7 flex items-center justify-center rounded-full transition-transform group-hover:scale-110"
-            style={{ background: "#1DB954" }}
-          >
-            <Play className="w-3 h-3 fill-black text-black ml-0.5" />
-          </span>
-        </a>
+        <TrackPlayer artist={artist} />
 
         {/* Watch the video — only present on Music Videos pins */}
         {artist.videoUrl && (
-          <a
-            href={artist.videoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex items-center justify-between p-2.5 rounded-sm transition-colors"
+          <button
+            onClick={() => onWatchVideo(artist)}
+            className="group flex items-center justify-between p-2.5 rounded-sm transition-colors text-left"
             style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(255,255,255,0.1)" }}
           >
             <div className="min-w-0 mr-2">
@@ -158,7 +147,7 @@ function ArtistCard({ artist }: { artist: Artist }) {
             >
               <Video className="w-3.5 h-3.5 text-white" />
             </span>
-          </a>
+          </button>
         )}
       </div>
     </div>
@@ -167,14 +156,16 @@ function ArtistCard({ artist }: { artist: Artist }) {
 
 export default function ArtistPanel({ location, onClose }: ArtistPanelProps) {
   const [streetViewOpen, setStreetViewOpen] = useState(false);
+  const [videoArtist, setVideoArtist] = useState<Artist | null>(null);
   const [lastLocationId, setLastLocationId] = useState(location?.id);
 
   // Adjusting state during render (React's sanctioned pattern for this,
   // rather than an effect) — a stale "open" flag would otherwise resurface
-  // Street View for the next location the moment it's selected.
+  // Street View (or the video modal) for the next location the moment it's selected.
   if (location?.id !== lastLocationId) {
     setLastLocationId(location?.id);
     setStreetViewOpen(false);
+    setVideoArtist(null);
   }
 
   if (!location) return null;
@@ -269,7 +260,7 @@ export default function ArtistPanel({ location, onClose }: ArtistPanelProps) {
           <div className="flex gap-3 px-5 pt-4 overflow-x-auto pb-1" style={{ scrollSnapType: "x mandatory" }}>
             {location.artists.map((artist) => (
               <div key={artist.id} style={{ scrollSnapAlign: "start" }}>
-                <ArtistCard artist={artist} />
+                <ArtistCard artist={artist} onWatchVideo={setVideoArtist} />
               </div>
             ))}
           </div>
@@ -289,6 +280,14 @@ export default function ArtistPanel({ location, onClose }: ArtistPanelProps) {
         lng={location.lng}
         name={location.name}
         onClose={() => setStreetViewOpen(false)}
+      />
+
+      <VideoPreview
+        open={!!videoArtist}
+        artistName={videoArtist?.name ?? ""}
+        videoTitle={videoArtist?.videoTitle ?? videoArtist?.signatureTrack ?? ""}
+        fallbackUrl={videoArtist?.videoUrl ?? ""}
+        onClose={() => setVideoArtist(null)}
       />
     </>
   );

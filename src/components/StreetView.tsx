@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
-import { X, ExternalLink, Navigation } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { X, ExternalLink, Navigation, Loader2 } from "lucide-react";
+import { loadGoogleMaps } from "@/lib/googleMapsLoader";
 
 interface StreetViewProps {
   open: boolean;
@@ -11,7 +12,29 @@ interface StreetViewProps {
   onClose: () => void;
 }
 
+const GOOGLE_MAPS_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
+
+// Without a key, "iframe" reproduces the original keyless svembed behavior.
+// With a key, we ask the JS API for the nearest panorama restricted to
+// `source: OUTDOOR` — the keyless iframe has no such restriction, which is
+// why it sometimes resolves to an indoor Local Guide photosphere (e.g. inside
+// a restaurant) instead of the actual street-level view of the pin.
+type Status = "loading" | "panorama" | "no-coverage" | "iframe";
+
 export default function StreetView({ open, lat, lng, name, onClose }: StreetViewProps) {
+  const [status, setStatus] = useState<Status>(GOOGLE_MAPS_KEY ? "loading" : "iframe");
+  const [lastKey, setLastKey] = useState(`${lat},${lng}`);
+  const panoContainerRef = useRef<HTMLDivElement>(null);
+
+  // Reset to "loading" during render (not inside the effect below) whenever a
+  // different pin is opened — same pattern used elsewhere in this app — so
+  // the async lookup effect only ever writes its own result, never a reset.
+  const key = `${lat},${lng}`;
+  if (open && GOOGLE_MAPS_KEY && key !== lastKey) {
+    setLastKey(key);
+    setStatus("loading");
+  }
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -27,12 +50,51 @@ export default function StreetView({ open, lat, lng, name, onClose }: StreetView
     return () => window.removeEventListener("keydown", onKey, true);
   }, [open, onClose]);
 
+  useEffect(() => {
+    if (!open || !GOOGLE_MAPS_KEY) return;
+    let cancelled = false;
+
+    loadGoogleMaps(GOOGLE_MAPS_KEY)
+      .then((google) => {
+        if (cancelled || !panoContainerRef.current) return;
+        const svService = new google.maps.StreetViewService();
+        svService.getPanorama(
+          {
+            location: { lat, lng },
+            radius: 60,
+            source: google.maps.StreetViewSource.OUTDOOR,
+          },
+          (data: { location: { pano: string } }, apiStatus: string) => {
+            if (cancelled) return;
+            if (apiStatus !== "OK" || !panoContainerRef.current) {
+              setStatus("no-coverage");
+              return;
+            }
+            new google.maps.StreetViewPanorama(panoContainerRef.current, {
+              pano: data.location.pano,
+              addressControl: false,
+              showRoadLabels: false,
+              motionTracking: false,
+              motionTrackingControl: false,
+              fullscreenControl: false,
+            });
+            setStatus("panorama");
+          }
+        );
+      })
+      .catch(() => {
+        // Script failed to load (network issue, misconfigured key) — the
+        // legacy iframe is a better fallback than a dead modal.
+        if (!cancelled) setStatus("iframe");
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [open, lat, lng]);
+
   if (!open) return null;
 
-  // No API key required: Google's "svembed" output renders a Street View
-  // panorama in a plain iframe. Coverage isn't guaranteed at every pin (some
-  // are rooftops, deserts, or private land), so we always pair it with a
-  // "open in Google Maps" escape hatch rather than pretending it always works.
   const embedSrc = `https://maps.google.com/maps?layer=c&cbll=${lat},${lng}&cbp=12,0,0,0,0&output=svembed`;
   const mapsUrl = `https://www.google.com/maps?layer=c&cbll=${lat},${lng}`;
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
@@ -98,13 +160,37 @@ export default function StreetView({ open, lat, lng, name, onClose }: StreetView
         </div>
 
         <div className="relative w-full" style={{ aspectRatio: "16 / 9", background: "#000" }}>
-          <iframe
-            src={embedSrc}
+          {status === "iframe" && (
+            <iframe
+              src={embedSrc}
+              className="absolute inset-0 w-full h-full"
+              style={{ border: 0 }}
+              loading="lazy"
+              allowFullScreen
+              title={`Street View of ${name}`}
+            />
+          )}
+
+          {status === "loading" && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Loader2 className="w-6 h-6 animate-spin text-white/60" />
+            </div>
+          )}
+
+          {status === "no-coverage" && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <p className="text-sm text-center px-6" style={{ color: "rgba(255,255,255,0.6)" }}>
+                No outdoor Street View imagery near this pin.
+              </p>
+            </div>
+          )}
+
+          {/* Always mounted so the ref exists before the panorama loads —
+              hidden behind the states above until it actually has content. */}
+          <div
+            ref={panoContainerRef}
             className="absolute inset-0 w-full h-full"
-            style={{ border: 0 }}
-            loading="lazy"
-            allowFullScreen
-            title={`Street View of ${name}`}
+            style={{ visibility: status === "panorama" ? "visible" : "hidden" }}
           />
         </div>
 

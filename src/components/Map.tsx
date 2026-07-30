@@ -3,14 +3,13 @@
 import { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { Shuffle, Share2, Check, List, Locate, Clock } from "lucide-react";
-import { LOCATIONS, GENRE_COLORS, eraStartYear } from "@/data/locations";
+import { Shuffle, Share2, Check, List, Locate } from "lucide-react";
+import { LOCATIONS, GENRE_COLORS } from "@/data/locations";
 import { Location } from "@/lib/types";
 import type { Theme } from "@/hooks/useTheme";
 import ArtistPanel from "./ArtistPanel";
 import SearchBar from "./SearchBar";
 import LocationList from "./LocationList";
-import TimeSlider from "./TimeSlider";
 
 const MAP_STYLES: Record<Theme, string> = {
   dark: "mapbox://styles/mapbox/dark-v11",
@@ -76,9 +75,6 @@ const clusterColor = [
   "#7f1d1d",
 ] as mapboxgl.ExpressionSpecification;
 
-const CURRENT_YEAR = new Date().getFullYear();
-const MIN_YEAR = Math.min(1900, ...LOCATIONS.map((l) => eraStartYear(l.era)));
-
 const locationsGeoJSON: GeoJSON.FeatureCollection<GeoJSON.Point> = {
   type: "FeatureCollection",
   features: LOCATIONS.map((loc) => ({
@@ -89,7 +85,6 @@ const locationsGeoJSON: GeoJSON.FeatureCollection<GeoJSON.Point> = {
       city: loc.city,
       genre: loc.genre,
       color: GENRE_COLORS[loc.genre] ?? "#ef4444",
-      startYear: eraStartYear(loc.era),
     },
     geometry: { type: "Point", coordinates: [loc.lng, loc.lat] },
   })),
@@ -109,8 +104,6 @@ export default function Map({ activeGenre, theme }: MapProps) {
   const hoverIdRef = useRef<string | null>(null);
   const activeGenreRef = useRef(activeGenre);
   const selectedRef = useRef<Location | null>(null);
-  const timeMachineOnRef = useRef(false);
-  const sliderYearRef = useRef(CURRENT_YEAR);
   const isFirstThemeRun = useRef(true);
   const [selected, setSelected] = useState<Location | null>(null);
   // Bumped every time the source + layers are (re)built — once on initial
@@ -120,9 +113,6 @@ export default function Map({ activeGenre, theme }: MapProps) {
   const [styleVersion, setStyleVersion] = useState(0);
   const [copied, setCopied] = useState(false);
   const [listOpen, setListOpen] = useState(false);
-  const [timeMachineOn, setTimeMachineOn] = useState(false);
-  const [sliderYear, setSliderYear] = useState(CURRENT_YEAR);
-  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     activeGenreRef.current = activeGenre;
@@ -131,14 +121,6 @@ export default function Map({ activeGenre, theme }: MapProps) {
   useEffect(() => {
     selectedRef.current = selected;
   }, [selected]);
-
-  useEffect(() => {
-    timeMachineOnRef.current = timeMachineOn;
-  }, [timeMachineOn]);
-
-  useEffect(() => {
-    sliderYearRef.current = sliderYear;
-  }, [sliderYear]);
 
   const hideTooltip = useCallback(() => {
     if (tooltipRef.current) tooltipRef.current.style.opacity = "0";
@@ -159,8 +141,8 @@ export default function Map({ activeGenre, theme }: MapProps) {
         center: [loc.lng, loc.lat],
         zoom: 13.5,
         pitch: 45,
-        duration: 1100,
-        curve: 1.3,
+        duration: 700,
+        curve: 1,
         essential: true,
       });
     }
@@ -196,42 +178,6 @@ export default function Map({ activeGenre, theme }: MapProps) {
     });
   }, []);
 
-  const handleToggleTimeMachine = useCallback(() => {
-    setTimeMachineOn((v) => {
-      const next = !v;
-      if (next) {
-        setSliderYear(MIN_YEAR);
-      } else {
-        setIsPlaying(false);
-      }
-      return next;
-    });
-  }, []);
-
-  const handleTogglePlay = useCallback(() => {
-    setIsPlaying((p) => {
-      const next = !p;
-      // Replaying from the end just re-runs the same frame forever — restart.
-      if (next && sliderYearRef.current >= CURRENT_YEAR) setSliderYear(MIN_YEAR);
-      return next;
-    });
-  }, []);
-
-  // Animate the slider forward a couple of years per tick while "playing."
-  useEffect(() => {
-    if (!isPlaying) return;
-    const id = setInterval(() => {
-      setSliderYear((y) => {
-        if (y >= CURRENT_YEAR) {
-          setIsPlaying(false);
-          return CURRENT_YEAR;
-        }
-        return Math.min(CURRENT_YEAR, y + 2);
-      });
-    }, 110);
-    return () => clearInterval(id);
-  }, [isPlaying]);
-
   // Close the panel on Escape — only while it's open, so a stray Escape
   // doesn't reset the map pitch for no reason.
   useEffect(() => {
@@ -245,7 +191,7 @@ export default function Map({ activeGenre, theme }: MapProps) {
 
   const handleResetView = useCallback(() => {
     handleClose();
-    mapRef.current?.flyTo({ ...WORLD_VIEW, duration: 900, essential: true });
+    mapRef.current?.flyTo({ ...WORLD_VIEW, duration: 700, essential: true });
   }, [handleClose]);
 
   useEffect(() => {
@@ -384,12 +330,10 @@ export default function Map({ activeGenre, theme }: MapProps) {
             city: string;
             genre: string;
             color: string;
-            startYear: number;
           };
           const genre = activeGenreRef.current;
           const genreOk = genre === "all" || props.genre === genre;
-          const yearOk = !timeMachineOnRef.current || props.startYear <= sliderYearRef.current;
-          if (!genreOk || !yearOk) {
+          if (!genreOk) {
             // Dimmed-out pin — behave as if it isn't there.
             map.getCanvas().style.cursor = "";
             clearHover();
@@ -445,7 +389,7 @@ export default function Map({ activeGenre, theme }: MapProps) {
         map.on("click", (e) => {
           if (!map.getLayer(PIN_LAYER)) return;
           // Small bbox so pins are easy to hit on touch screens.
-          const pad = 6;
+          const pad = 14;
           const features = map
             .queryRenderedFeatures(
               [
@@ -455,12 +399,8 @@ export default function Map({ activeGenre, theme }: MapProps) {
               { layers: [PIN_LAYER] }
             )
             .filter((f) => {
-              const p = f.properties as { genre: string; startYear: number };
-              const genreOk =
-                activeGenreRef.current === "all" || p.genre === activeGenreRef.current;
-              const yearOk =
-                !timeMachineOnRef.current || p.startYear <= sliderYearRef.current;
-              return genreOk && yearOk;
+              const p = f.properties as { genre: string };
+              return activeGenreRef.current === "all" || p.genre === activeGenreRef.current;
             });
           const hit = features[0];
           if (hit) {
@@ -519,32 +459,27 @@ export default function Map({ activeGenre, theme }: MapProps) {
     }
   }, [styleVersion, handleSelect]);
 
-  // Fade pins that don't match the active genre and/or the time machine's
-  // current year. Clusters are left alone — their contents are usually mixed
-  // genres/eras, so per-genre or per-year dimming of the aggregate wouldn't
-  // read cleanly; only the unclustered pin/glow layers respond.
+  // Fade pins that don't match the active genre. Clusters are left alone —
+  // their contents are usually mixed genres, so per-genre dimming of the
+  // aggregate wouldn't read cleanly; only the unclustered pin/glow layers respond.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !styleVersion || !map.getLayer(PIN_LAYER)) return;
 
-    const conditions: mapboxgl.ExpressionSpecification[] = [];
-    if (activeGenre !== "all") conditions.push(["==", ["get", "genre"], activeGenre]);
-    if (timeMachineOn) conditions.push(["<=", ["get", "startYear"], sliderYear]);
+    const genreFilter: mapboxgl.ExpressionSpecification = ["==", ["get", "genre"], activeGenre];
 
     const buildExpr = (
       visibleOpacity: number,
       dimmedOpacity: number
     ): mapboxgl.ExpressionSpecification | number => {
-      if (conditions.length === 0) return visibleOpacity;
-      const combined: mapboxgl.ExpressionSpecification =
-        conditions.length === 1 ? conditions[0] : (["all", ...conditions] as mapboxgl.ExpressionSpecification);
-      return ["case", combined, visibleOpacity, dimmedOpacity] as mapboxgl.ExpressionSpecification;
+      if (activeGenre === "all") return visibleOpacity;
+      return ["case", genreFilter, visibleOpacity, dimmedOpacity] as mapboxgl.ExpressionSpecification;
     };
 
     map.setPaintProperty(PIN_LAYER, "circle-opacity", buildExpr(1, 0.12));
     map.setPaintProperty(PIN_LAYER, "circle-stroke-opacity", buildExpr(1, 0.12));
     map.setPaintProperty(GLOW_LAYER, "circle-opacity", buildExpr(0.4, 0.04));
-  }, [activeGenre, timeMachineOn, sliderYear, styleVersion]);
+  }, [activeGenre, styleVersion]);
 
   // Highlight the selected pin.
   useEffect(() => {
@@ -640,20 +575,6 @@ export default function Map({ activeGenre, theme }: MapProps) {
       {TOKEN && (
         <div className="absolute bottom-6 right-4 z-20 flex flex-col gap-2">
           <button
-            onClick={handleToggleTimeMachine}
-            title="Time Machine — travel through music history"
-            aria-label="Toggle the time machine slider"
-            aria-pressed={timeMachineOn}
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-105"
-            style={
-              timeMachineOn
-                ? { background: "#ef4444", color: "#fff", boxShadow: "0 2px 12px rgba(239,68,68,0.45)" }
-                : { background: "rgba(12,11,10,0.92)", border: "1px solid rgba(255,255,255,0.12)", color: "#fff" }
-            }
-          >
-            <Clock className="w-4 h-4" />
-          </button>
-          <button
             onClick={handleResetView}
             title="Reset view"
             aria-label="Reset map to the world view"
@@ -683,21 +604,6 @@ export default function Map({ activeGenre, theme }: MapProps) {
             <Shuffle className="w-4 h-4" />
           </button>
         </div>
-      )}
-
-      {timeMachineOn && (
-        <TimeSlider
-          year={sliderYear}
-          minYear={MIN_YEAR}
-          maxYear={CURRENT_YEAR}
-          playing={isPlaying}
-          onYearChange={(y) => {
-            setIsPlaying(false);
-            setSliderYear(y);
-          }}
-          onTogglePlay={handleTogglePlay}
-          onClose={handleToggleTimeMachine}
-        />
       )}
 
       <ArtistPanel location={selected} onClose={handleClose} />
