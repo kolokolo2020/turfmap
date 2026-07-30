@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { Shuffle, Share2, Check, List, Locate, Flame, Clock, TrendingUp } from "lucide-react";
+import { Shuffle, Share2, Check, List, Locate, Clock } from "lucide-react";
 import { LOCATIONS, GENRE_COLORS, eraStartYear } from "@/data/locations";
 import { Location } from "@/lib/types";
 import type { Theme } from "@/hooks/useTheme";
@@ -27,7 +27,6 @@ const PIN_LAYER = "turf-pins";
 const GLOW_LAYER = "turf-glow";
 const CLUSTER_LAYER = "turf-clusters";
 const CLUSTER_COUNT_LAYER = "turf-cluster-count";
-const HEATMAP_LAYER = "turf-heatmap";
 
 // Pins are GL circle layers, not DOM markers. DOM markers are positioned by
 // writing to el.style.transform — which fought our own hover/filter scale()
@@ -77,12 +76,6 @@ const clusterColor = [
   "#7f1d1d",
 ] as mapboxgl.ExpressionSpecification;
 
-// Heatmap weight counts a cluster as its full point count, so density reads
-// correctly at low zoom where the same source is still clustered.
-const heatmapWeight = [
-  "case", ["has", "point_count"], ["min", ["/", ["get", "point_count"], 8], 6], 1,
-] as mapboxgl.ExpressionSpecification;
-
 const CURRENT_YEAR = new Date().getFullYear();
 const MIN_YEAR = Math.min(1900, ...LOCATIONS.map((l) => eraStartYear(l.era)));
 
@@ -97,7 +90,6 @@ const locationsGeoJSON: GeoJSON.FeatureCollection<GeoJSON.Point> = {
       genre: loc.genre,
       color: GENRE_COLORS[loc.genre] ?? "#ef4444",
       startYear: eraStartYear(loc.era),
-      trending: loc.artists.some((a) => a.trending),
     },
     geometry: { type: "Point", coordinates: [loc.lng, loc.lat] },
   })),
@@ -119,7 +111,6 @@ export default function Map({ activeGenre, theme }: MapProps) {
   const selectedRef = useRef<Location | null>(null);
   const timeMachineOnRef = useRef(false);
   const sliderYearRef = useRef(CURRENT_YEAR);
-  const trendingOnlyRef = useRef(false);
   const isFirstThemeRun = useRef(true);
   const [selected, setSelected] = useState<Location | null>(null);
   // Bumped every time the source + layers are (re)built — once on initial
@@ -129,11 +120,9 @@ export default function Map({ activeGenre, theme }: MapProps) {
   const [styleVersion, setStyleVersion] = useState(0);
   const [copied, setCopied] = useState(false);
   const [listOpen, setListOpen] = useState(false);
-  const [heatmapOn, setHeatmapOn] = useState(false);
   const [timeMachineOn, setTimeMachineOn] = useState(false);
   const [sliderYear, setSliderYear] = useState(CURRENT_YEAR);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [trendingOnly, setTrendingOnly] = useState(false);
 
   useEffect(() => {
     activeGenreRef.current = activeGenre;
@@ -150,10 +139,6 @@ export default function Map({ activeGenre, theme }: MapProps) {
   useEffect(() => {
     sliderYearRef.current = sliderYear;
   }, [sliderYear]);
-
-  useEffect(() => {
-    trendingOnlyRef.current = trendingOnly;
-  }, [trendingOnly]);
 
   const hideTooltip = useCallback(() => {
     if (tooltipRef.current) tooltipRef.current.style.opacity = "0";
@@ -174,7 +159,8 @@ export default function Map({ activeGenre, theme }: MapProps) {
         center: [loc.lng, loc.lat],
         zoom: 13.5,
         pitch: 45,
-        duration: 1400,
+        duration: 1100,
+        curve: 1.3,
         essential: true,
       });
     }
@@ -186,7 +172,7 @@ export default function Map({ activeGenre, theme }: MapProps) {
 
   const handleClose = useCallback(() => {
     setSelected(null);
-    mapRef.current?.easeTo({ pitch: 0, duration: 800 });
+    mapRef.current?.easeTo({ pitch: 0, duration: 600, essential: true });
     const url = new URL(window.location.href);
     url.searchParams.delete("loc");
     window.history.replaceState({}, "", url);
@@ -195,28 +181,19 @@ export default function Map({ activeGenre, theme }: MapProps) {
   const handleShuffle = useCallback(() => {
     let pool =
       activeGenre === "all" ? LOCATIONS : LOCATIONS.filter((l) => l.genre === activeGenre);
-    if (trendingOnly) pool = pool.filter((l) => l.artists.some((a) => a.trending));
     if (pool.length > 1 && selectedRef.current) {
       pool = pool.filter((l) => l.id !== selectedRef.current!.id);
     }
     if (!pool.length) return;
     const pick = pool[Math.floor(Math.random() * pool.length)];
     handleSelect(pick);
-  }, [activeGenre, trendingOnly, handleSelect]);
+  }, [activeGenre, handleSelect]);
 
   const handleShare = useCallback(() => {
     navigator.clipboard?.writeText(window.location.href).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     });
-  }, []);
-
-  const handleToggleHeatmap = useCallback(() => {
-    setHeatmapOn((v) => !v);
-  }, []);
-
-  const handleToggleTrending = useCallback(() => {
-    setTrendingOnly((v) => !v);
   }, []);
 
   const handleToggleTimeMachine = useCallback(() => {
@@ -268,7 +245,7 @@ export default function Map({ activeGenre, theme }: MapProps) {
 
   const handleResetView = useCallback(() => {
     handleClose();
-    mapRef.current?.flyTo({ ...WORLD_VIEW, duration: 1200, essential: true });
+    mapRef.current?.flyTo({ ...WORLD_VIEW, duration: 900, essential: true });
   }, [handleClose]);
 
   useEffect(() => {
@@ -287,9 +264,32 @@ export default function Map({ activeGenre, theme }: MapProps) {
       // Flat Mercator, not globe — circle layers project 1:1 with the basemap.
       projection: { name: "mercator" } as mapboxgl.Projection,
       attributionControl: false,
+      // Single copy of the world — with the default (true) the map tiles
+      // repeat sideways at low zoom, doubling every pin's apparent position.
+      renderWorldCopies: false,
+      // Clamped to the real world edges so panning/zooming out can never
+      // reveal empty void past the poles or wrap past the antimeridian —
+      // this is what "fixes" the map's shape at low zoom, not minZoom alone.
+      maxBounds: [
+        [-180, -85],
+        [180, 85],
+      ],
+      // This is a flat data map, not a 3D globe explorer — dragging to spin
+      // the world was disorienting and easy to trigger by accident.
+      dragRotate: false,
+      pitchWithRotate: false,
+      touchPitch: false,
     });
 
+    // Faster, snappier scroll-wheel zoom than Mapbox's default rate.
+    map.scrollZoom.setWheelZoomRate(1 / 300);
+    map.scrollZoom.setZoomRate(1 / 80);
+
     map.addControl(new mapboxgl.AttributionControl({ compact: true }), "bottom-left");
+    map.addControl(
+      new mapboxgl.NavigationControl({ showCompass: false, showZoom: true }),
+      "bottom-left"
+    );
 
     // Delegated layer listeners (map.on(type, layerId, handler)) query the
     // named layer as soon as they fire — registering them before the layer
@@ -372,31 +372,6 @@ export default function Map({ activeGenre, theme }: MapProps) {
         paint: { "text-color": "#ffffff" },
       });
 
-      // Density view — an alternate visualization toggled on by the flame
-      // button, hidden by default. Weighted by cluster size so it reads
-      // correctly even when zoomed out and the source is still clustered.
-      map.addLayer({
-        id: HEATMAP_LAYER,
-        type: "heatmap",
-        source: SOURCE_ID,
-        layout: { visibility: "none" },
-        paint: {
-          "heatmap-weight": heatmapWeight,
-          "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 1.5, 0.6, 9, 2],
-          "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 1.5, 14, 9, 34],
-          "heatmap-opacity": ["interpolate", ["linear"], ["zoom"], 1.5, 0.85, 14, 0.4],
-          "heatmap-color": [
-            "interpolate", ["linear"], ["heatmap-density"],
-            0, "rgba(0,0,0,0)",
-            0.2, "#3b82f6",
-            0.4, "#22c55e",
-            0.6, "#f59e0b",
-            0.8, "#ef4444",
-            1, "#f43f5e",
-          ],
-        },
-      });
-
       if (!listenersAttached) {
         listenersAttached = true;
 
@@ -410,13 +385,11 @@ export default function Map({ activeGenre, theme }: MapProps) {
             genre: string;
             color: string;
             startYear: number;
-            trending: boolean;
           };
           const genre = activeGenreRef.current;
           const genreOk = genre === "all" || props.genre === genre;
           const yearOk = !timeMachineOnRef.current || props.startYear <= sliderYearRef.current;
-          const trendingOk = !trendingOnlyRef.current || props.trending;
-          if (!genreOk || !yearOk || !trendingOk) {
+          if (!genreOk || !yearOk) {
             // Dimmed-out pin — behave as if it isn't there.
             map.getCanvas().style.cursor = "";
             clearHover();
@@ -482,13 +455,12 @@ export default function Map({ activeGenre, theme }: MapProps) {
               { layers: [PIN_LAYER] }
             )
             .filter((f) => {
-              const p = f.properties as { genre: string; startYear: number; trending: boolean };
+              const p = f.properties as { genre: string; startYear: number };
               const genreOk =
                 activeGenreRef.current === "all" || p.genre === activeGenreRef.current;
               const yearOk =
                 !timeMachineOnRef.current || p.startYear <= sliderYearRef.current;
-              const trendingOk = !trendingOnlyRef.current || p.trending;
-              return genreOk && yearOk && trendingOk;
+              return genreOk && yearOk;
             });
           const hit = features[0];
           if (hit) {
@@ -558,7 +530,6 @@ export default function Map({ activeGenre, theme }: MapProps) {
     const conditions: mapboxgl.ExpressionSpecification[] = [];
     if (activeGenre !== "all") conditions.push(["==", ["get", "genre"], activeGenre]);
     if (timeMachineOn) conditions.push(["<=", ["get", "startYear"], sliderYear]);
-    if (trendingOnly) conditions.push(["==", ["get", "trending"], true]);
 
     const buildExpr = (
       visibleOpacity: number,
@@ -573,19 +544,7 @@ export default function Map({ activeGenre, theme }: MapProps) {
     map.setPaintProperty(PIN_LAYER, "circle-opacity", buildExpr(1, 0.12));
     map.setPaintProperty(PIN_LAYER, "circle-stroke-opacity", buildExpr(1, 0.12));
     map.setPaintProperty(GLOW_LAYER, "circle-opacity", buildExpr(0.4, 0.04));
-  }, [activeGenre, timeMachineOn, sliderYear, trendingOnly, styleVersion]);
-
-  // Toggle between the pin/cluster view and the heatmap density view.
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !styleVersion || !map.getLayer(HEATMAP_LAYER)) return;
-    const pinVisibility = heatmapOn ? "none" : "visible";
-    map.setLayoutProperty(HEATMAP_LAYER, "visibility", heatmapOn ? "visible" : "none");
-    map.setLayoutProperty(PIN_LAYER, "visibility", pinVisibility);
-    map.setLayoutProperty(GLOW_LAYER, "visibility", pinVisibility);
-    map.setLayoutProperty(CLUSTER_LAYER, "visibility", pinVisibility);
-    map.setLayoutProperty(CLUSTER_COUNT_LAYER, "visibility", pinVisibility);
-  }, [heatmapOn, styleVersion]);
+  }, [activeGenre, timeMachineOn, sliderYear, styleVersion]);
 
   // Highlight the selected pin.
   useEffect(() => {
@@ -601,10 +560,8 @@ export default function Map({ activeGenre, theme }: MapProps) {
   }, [selected, styleVersion]);
 
   const filteredLocations = useMemo(() => {
-    let list = activeGenre === "all" ? LOCATIONS : LOCATIONS.filter((l) => l.genre === activeGenre);
-    if (trendingOnly) list = list.filter((l) => l.artists.some((a) => a.trending));
-    return list;
-  }, [activeGenre, trendingOnly]);
+    return activeGenre === "all" ? LOCATIONS : LOCATIONS.filter((l) => l.genre === activeGenre);
+  }, [activeGenre]);
 
   return (
     <div className="relative w-full h-full">
@@ -683,20 +640,6 @@ export default function Map({ activeGenre, theme }: MapProps) {
       {TOKEN && (
         <div className="absolute bottom-6 right-4 z-20 flex flex-col gap-2">
           <button
-            onClick={handleToggleTrending}
-            title="Show only artists trending in the last few years"
-            aria-label="Toggle trending artists only"
-            aria-pressed={trendingOnly}
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-105"
-            style={
-              trendingOnly
-                ? { background: "#ef4444", color: "#fff", boxShadow: "0 2px 12px rgba(239,68,68,0.45)" }
-                : { background: "rgba(12,11,10,0.92)", border: "1px solid rgba(255,255,255,0.12)", color: "#fff" }
-            }
-          >
-            <TrendingUp className="w-4 h-4" />
-          </button>
-          <button
             onClick={handleToggleTimeMachine}
             title="Time Machine — travel through music history"
             aria-label="Toggle the time machine slider"
@@ -709,20 +652,6 @@ export default function Map({ activeGenre, theme }: MapProps) {
             }
           >
             <Clock className="w-4 h-4" />
-          </button>
-          <button
-            onClick={handleToggleHeatmap}
-            title="Toggle heatmap density view"
-            aria-label="Toggle heatmap density view"
-            aria-pressed={heatmapOn}
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-105"
-            style={
-              heatmapOn
-                ? { background: "#ef4444", color: "#fff", boxShadow: "0 2px 12px rgba(239,68,68,0.45)" }
-                : { background: "rgba(12,11,10,0.92)", border: "1px solid rgba(255,255,255,0.12)", color: "#fff" }
-            }
-          >
-            <Flame className="w-4 h-4" />
           </button>
           <button
             onClick={handleResetView}

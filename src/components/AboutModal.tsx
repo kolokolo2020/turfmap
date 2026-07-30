@@ -72,7 +72,7 @@ export default function AboutModal({ open, onClose }: AboutModalProps) {
           </p>
 
           <p className="text-xs leading-relaxed mb-4" style={{ color: "var(--fg2)" }}>
-            Scrub the <strong style={{ color: "var(--fg)" }}>Time Machine</strong> to watch genres spread across decades, switch to the <strong style={{ color: "var(--fg)" }}>heatmap</strong> to see where the world&apos;s music is densest, or flip on <strong style={{ color: "var(--fg)" }}>Trending</strong> to see only artists who broke out in the last few years.
+            Scrub the <strong style={{ color: "var(--fg)" }}>Time Machine</strong> to watch genres spread across decades, or hit <strong style={{ color: "var(--fg)" }}>Shuffle</strong> to jump to a random location. Artists who broke out in the last few years are marked <strong style={{ color: "var(--fg)" }}>Trending</strong> on their cards.
           </p>
 
           <p className="label mb-2" style={{ color: "var(--fg3)" }}>Genres on the map</p>
